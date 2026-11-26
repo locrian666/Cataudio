@@ -1,0 +1,10 @@
+# 依赖和本地缓存
+node_modules/
+.wrangler/
+.DS_Store
+.claude/
+
+# 密钥和测试码：只放在本机和 Cloudflare 后台
+owner-token.txt
+.dev.vars
+.env*

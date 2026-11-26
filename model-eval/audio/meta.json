@@ -1,0 +1,146 @@
+[
+ {
+  "tag": "off",
+  "i": 1,
+  "style": "Lo-fi Pop",
+  "bpm": 90,
+  "root": 0,
+  "minor": false,
+  "file": "audio/off_1.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 2,
+  "style": "Lo-fi Chillhop",
+  "bpm": 75,
+  "root": 9,
+  "minor": true,
+  "file": "audio/off_2.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 3,
+  "style": "Trip Hop",
+  "bpm": 90,
+  "root": 2,
+  "minor": true,
+  "file": "audio/off_3.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 4,
+  "style": "Lo-fi Chillhop",
+  "bpm": 78,
+  "root": 4,
+  "minor": true,
+  "file": "audio/off_4.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 5,
+  "style": "City Pop / Lo-fi",
+  "bpm": 95,
+  "root": 5,
+  "minor": false,
+  "file": "audio/off_5.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 6,
+  "style": "Lo-fi Chillhop",
+  "bpm": 78,
+  "root": 5,
+  "minor": true,
+  "file": "audio/off_6.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 7,
+  "style": "Lo-fi Chillwave",
+  "bpm": 85,
+  "root": 9,
+  "minor": true,
+  "file": "audio/off_7.mp4"
+ },
+ {
+  "tag": "off",
+  "i": 8,
+  "style": "Lo-fi Chillhop",
+  "bpm": 75,
+  "root": 9,
+  "minor": true,
+  "file": "audio/off_8.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 1,
+  "style": "City Pop",
+  "bpm": 120,
+  "root": 0,
+  "minor": false,
+  "file": "audio/think_1.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 2,
+  "style": "Lo-Fi / Indie Pop",
+  "bpm": 70,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_2.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 3,
+  "style": "Indie Pop/Alternative",
+  "bpm": 90,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_3.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 4,
+  "style": "Lo-fi Hip Hop",
+  "bpm": 78,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_4.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 5,
+  "style": "City Pop / Indie Pop",
+  "bpm": 118,
+  "root": 0,
+  "minor": false,
+  "file": "audio/think_5.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 6,
+  "style": "Indie Folk",
+  "bpm": 80,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_6.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 7,
+  "style": "Lo-Fi Indie Pop",
+  "bpm": 78,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_7.mp4"
+ },
+ {
+  "tag": "think",
+  "i": 8,
+  "style": "Lo-fi Indie",
+  "bpm": 82,
+  "root": 9,
+  "minor": true,
+  "file": "audio/think_8.mp4"
+ }
+]

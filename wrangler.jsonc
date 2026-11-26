@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cataudio",
+  "compatibility_date": "2026-11-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "deploy",
+  // 聊天次数限制：每个 IP 每天的计数
+  "kv_namespaces": [{ "binding": "RL", "id": "05075d857e73428fb2a277a0dd0e8e10" }]
+  // ANTHROPIC_API_KEY 是密钥，不写在这里，用 wrangler pages secret put 设置
+}

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>猫抓音乐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Silkscreen&family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 夜里的小房间：深靛蓝墙面 + 橘猫暖色；所有面板用 2px 缺角的像素描边。左边是 App（手机宽度），宽屏时右边展开「幕后」 */
+  --bg:#15102a;
+  --panel:#221a3e;
+  --line:#3d3168;
+  --text:#f4ecd8;
+  --muted:#a89ec8;
+  --accent:#ff9a4d;
+  --accent-dark:#b4561a;
+  --mint:#8fe3cf;
+  --display:"ZCOOL QingKe HuangYou","Noto Sans SC",system-ui,sans-serif;
+  --body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --pixel:"Silkscreen",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(#ffffff0a 1px,transparent 1px);background-size:16px 16px}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+
+/* 像素描边：四条 2px 阴影拼出缺角的外框 */
+.px{--pc:var(--line);border:0;border-radius:0;box-shadow:0 -2px 0 0 var(--pc),0 2px 0 0 var(--pc),-2px 0 0 0 var(--pc),2px 0 0 0 var(--pc)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:22px 18px 56px;display:grid;gap:28px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.wrap{grid-template-columns:420px minmax(0,1fr);align-items:start}}
+
+.app{display:flex;flex-direction:column;gap:16px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--display);font-size:32px;letter-spacing:1px;margin:0;line-height:1;display:flex;align-items:center;gap:8px}
+.logo span{color:var(--accent)}
+.logo svg{width:22px;height:22px;color:var(--accent)}
+.topr{display:flex;align-items:center;gap:12px}
+.date{font-family:var(--pixel);font-size:12px;color:var(--muted)}
+.skin{background:var(--panel);padding:4px 10px;font-size:13px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.skin i{width:10px;height:10px;display:inline-block;box-shadow:0 0 0 2px #0006}
+.skin:hover{--pc:var(--muted)}
+
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:2px}
+.tile{background:var(--panel);padding:6px 8px 7px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.tk{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:4px;white-space:nowrap}
+.tk button{background:none;border:0;padding:0;color:var(--mint);font-size:11px;cursor:pointer}
+.tv{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile select{background:transparent;border:0;padding:0;font-size:15px;font-weight:500;cursor:pointer;width:100%;appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(-45deg,transparent 50%,var(--muted) 50%);
+  background-position:right 6px top 55%,right 2px top 55%;background-size:4px 4px;background-repeat:no-repeat;padding-right:12px}
+.tile select option{background:var(--panel);color:var(--text)}
+.dot{display:inline-block;width:6px;height:6px;background:var(--mint);margin-right:4px;vertical-align:1px}
+.dot.off{background:var(--muted)}
+.status{font-size:12px;color:var(--muted);margin:-6px 0 0;padding:0 2px}
+
+.stage{--pc:#4a3c7a;margin:2px;background:#241c48;box-shadow:0 -2px 0 0 var(--pc),0 2px 0 0 var(--pc),-2px 0 0 0 var(--pc),2px 0 0 0 var(--pc),6px 6px 0 0 #0b0818}
+.stage canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
+.bubble{position:relative;background:var(--text);color:#21183a;padding:10px 14px 11px;font-size:14px;line-height:1.5;min-height:46px;display:flex;gap:10px;align-items:baseline}
+.bubble b{font-family:var(--display);font-weight:400;color:var(--accent-dark);font-size:15px;flex:none}
+.bubble::after{content:"";position:absolute;top:-6px;left:calc(var(--tip,44%) - 6px);width:12px;height:6px;background:var(--text);clip-path:polygon(0 100%,50% 0,100% 100%);transition:left .3s}
+
+.label{font-size:13px;color:var(--muted);margin:0 0 8px}
+.moods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:2px}
+.mood{background:var(--panel);padding:8px 4px;cursor:pointer;font-size:14px}
+.mood:hover{--pc:var(--muted)}
+.mood[aria-pressed="true"]{background:var(--mint);color:#10241f;--pc:#5fbfa9;font-weight:700}
+.mood:active{transform:translateY(1px)}
+
+.grabrow{display:flex;align-items:center;gap:16px;padding:2px 2px 6px}
+.grab{--pc:var(--accent-dark);border:0;border-radius:0;margin:2px;flex:1;background:var(--accent);color:#2a1606;padding:13px;font-family:var(--display);font-size:24px;letter-spacing:3px;cursor:pointer;
+  box-shadow:0 -2px 0 0 var(--pc),0 2px 0 0 var(--pc),-2px 0 0 0 var(--pc),2px 0 0 0 var(--pc),0 6px 0 0 var(--pc)}
+.grab:hover{background:#ffa862}
+.grab:active{transform:translateY(4px);box-shadow:0 -2px 0 0 var(--pc),0 2px 0 0 var(--pc),-2px 0 0 0 var(--pc),2px 0 0 0 var(--pc)}
+.grab:disabled{opacity:.6;cursor:default;transform:none}
+.left{background:none;border:0;padding:0;cursor:default;display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--muted)}
+.paws{display:flex;gap:4px}
+.paws svg{width:18px;height:18px;color:var(--accent)}
+.paws svg.used{color:#3d3168}
+
+.card{background:var(--panel);margin:2px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.card.empty{color:var(--muted);font-size:14px;text-align:center;padding:26px 16px;background:transparent;--pc:#3d3168}
+.cardtop{display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;align-items:center}
+.cover{width:88px;height:88px;image-rendering:pixelated;display:block;box-shadow:4px 4px 0 0 #0b0818}
+.kicker{font-family:var(--pixel);font-size:10px;color:var(--mint);margin:0 0 2px;letter-spacing:.5px}
+.title{font-family:var(--display);font-weight:400;font-size:24px;line-height:1.15;margin:0 0 6px;text-wrap:balance}
+.tags{display:flex;flex-wrap:wrap;gap:4px 6px}
+.tag{font-size:12px;color:var(--muted);background:#2c2350;padding:0 6px}
+.tag.num{font-family:var(--pixel);font-size:10px;line-height:19px}
+.reason{margin:0;font-size:14px;background:#2c2350;padding:10px 12px;position:relative}
+.reason::before{content:"抓抓说";display:block;font-size:11px;color:var(--accent);margin-bottom:2px}
+.player{display:flex;align-items:center;gap:12px}
+.playbtn{--pc:#5fbfa9;width:40px;height:40px;background:var(--mint);color:#10241f;cursor:pointer;display:grid;place-items:center;margin:2px;flex:none}
+.playbtn svg{width:16px;height:16px}
+.viz{flex:1;height:28px;min-width:0;image-rendering:pixelated}
+.time{font-family:var(--pixel);font-size:11px;color:var(--muted);flex:none}
+.actions{display:flex;gap:10px;padding:2px}
+.btn{background:transparent;padding:6px 12px;cursor:pointer;font-size:13px;flex:1}
+.btn:hover{--pc:var(--muted)}
+.btn[aria-pressed="true"]{--pc:var(--accent);color:var(--accent)}
+
+.today{display:flex;flex-direction:column;gap:8px;margin:0;padding:2px;list-style:none}
+.today li button{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;padding:6px 10px;cursor:pointer;font-size:14px}
+.today li button:hover{--pc:var(--muted)}
+.today canvas{width:24px;height:24px;image-rendering:pixelated;flex:none}
+.today .t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.today .s{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* 幕后面板 */
+.backstage{background:#1b1534;margin:2px;padding:22px;display:flex;flex-direction:column;gap:20px;min-width:0;--pc:#2e2555}
+.backstage h2{font-family:var(--display);font-weight:400;font-size:26px;margin:0;line-height:1.2}
+.backstage h3{font-size:13px;margin:0 0 8px;color:var(--muted);font-weight:500;letter-spacing:.5px}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:62ch}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:500}
+td.r,th.r{text-align:right}
+.pos{color:var(--mint)} .neg{color:#ff8fa3}
+tfoot td{font-weight:700;border-bottom:0}
+.axes{display:grid;gap:10px}
+.axis{display:grid;grid-template-columns:44px 1fr 36px;gap:10px;align-items:center;font-size:13px}
+.bar{height:10px;background:#2c2452;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 8px);transition:width .4s}
+.bar.v i{background:repeating-linear-gradient(90deg,var(--mint) 0 6px,transparent 6px 8px)}
+.axis b{font-family:var(--pixel);font-weight:400;text-align:right;font-size:12px}
+.styles{display:flex;flex-wrap:wrap;gap:8px;padding:2px}
+.sty{font-size:12px;padding:2px 8px;color:var(--muted);--pc:#3d3168}
+.sty.on{--pc:var(--accent);color:var(--accent)}
+.sty em{font-style:normal;font-family:var(--pixel);font-size:10px;margin-left:4px}
+.spec{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;margin:0}
+.spec dt{color:var(--muted)} .spec dd{margin:0}
+.pipe{margin:0;padding-left:20px;font-size:13px;color:var(--muted);display:grid;gap:4px}
+.pipe li.now{color:var(--text)}
+
+/* 分享卡弹层 */
+.modal{position:fixed;inset:0;background:#0b0818d9;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal.open{display:flex}
+.sheet{background:var(--panel);padding:16px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:12px;max-height:100%;overflow:auto}
+.sheet img{width:100%;height:auto;image-rendering:pixelated;display:block}
+.sheet p{margin:0;font-size:13px;color:var(--muted)}
+.sheet .row{display:flex;gap:10px;justify-content:flex-end;padding:2px}
+.sheet .btn{flex:none}
+.sheet .btn.primary{background:var(--mint);color:#10241f;--pc:#5fbfa9;font-weight:700}
+
+@media (max-width:380px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}.bubble::after{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-paw" viewBox="0 0 8 8"><g fill="currentColor" shape-rendering="crispEdges"><rect x="0" y="2" width="1" height="2"/><rect x="2" y="0" width="1" height="2"/><rect x="5" y="0" width="1" height="2"/><rect x="7" y="2" width="1" height="2"/><rect x="2" y="3" width="4" height="1"/><rect x="1" y="4" width="6" height="3"/><rect x="2" y="7" width="4" height="1"/></g></symbol>
+  <symbol id="i-play" viewBox="0 0 8 8"><g fill="currentColor" shape-rendering="crispEdges"><rect x="1" y="0" width="2" height="8"/><rect x="3" y="1" width="2" height="6"/><rect x="5" y="2" width="1" height="4"/><rect x="6" y="3" width="1" height="2"/></g></symbol>
+  <symbol id="i-pause" viewBox="0 0 8 8"><g fill="currentColor" shape-rendering="crispEdges"><rect x="1" y="0" width="2" height="8"/><rect x="5" y="0" width="2" height="8"/></g></symbol>
+</svg>
+<div class="wrap">
+  <main class="app" aria-label="猫抓音乐">
+    <header class="top">
+      <h1 class="logo"><svg aria-hidden="true"><use href="#i-paw"/></svg>猫<span>抓</span>音乐</h1>
+      <div class="topr">
+        <button class="skin px" id="skin" type="button" aria-label="换一只猫"><i id="skinDot"></i><span id="skinName">橘白</span></button>
+        <span class="date" id="date"></span>
+      </div>
+    </header>
+
+    <div class="tiles" aria-label="今天的信号">
+      <div class="tile px">
+        <span class="tk">城市<button id="locate" type="button" title="用浏览器定位">定位</button></span>
+        <select id="city" aria-label="城市"></select>
+      </div>
+      <div class="tile px">
+        <span class="tk"><span><i class="dot off" id="wxDot"></i>天气</span></span>
+        <span class="tv" id="wxText">读取中</span>
+        <select id="wxManual" aria-label="手动选择天气" hidden>
+          <option value="sunny">晴</option><option value="cloudy">多云</option><option value="rain">雨</option><option value="snow">雪</option>
+        </select>
+      </div>
+      <div class="tile px">
+        <span class="tk">时段</span>
+        <span class="tv" id="tbText"></span>
+      </div>
+      <div class="tile px">
+        <span class="tk">新闻情绪</span>
+        <select id="news" aria-label="今日新闻情绪"><option>轻松</option><option>沉重</option><option>紧张</option></select>
+      </div>
+    </div>
+    <p class="status" id="status"></p>
+
+    <div class="stage">
+      <canvas id="scene" width="80" height="52" aria-label="像素房间里的小猫抓抓" role="img"></canvas>
+      <div class="bubble" id="bubbleBox"><b>抓抓</b><span id="bubble" aria-live="polite"></span></div>
+    </div>
+
+    <div>
+      <p class="label">你现在……（可以不选）</p>
+      <div class="moods" id="moods"></div>
+    </div>
+
+    <div class="grabrow">
+      <button class="grab" id="grab" type="button">抓一首</button>
+      <button class="left" id="left" type="button" tabindex="-1" aria-label="今天还能抓的次数">
+        <span class="paws" id="paws"></span><span id="leftText">今天还能抓 3 次</span>
+      </button>
+    </div>
+
+    <section id="card" class="card px empty" aria-live="polite">点「抓一首」，抓抓会去唱片堆里翻一首给你。</section>
+
+    <section id="todayWrap" hidden>
+      <p class="label">今天抓到的</p>
+      <ul class="today" id="today"></ul>
+    </section>
+  </main>
+
+  <aside class="backstage px" aria-label="幕后">
+    <div>
+      <h2>幕后：抓抓怎么选歌</h2>
+      <p class="lead">每个信号给「能量」和「效价」两个轴加减分，按权重叠加，再从各信号偏好的风格里随机抽一个。规则来自 PRD 的映射表。</p>
+    </div>
+    <div>
+      <h3>信号打分</h3>
+      <div class="tablewrap"><table id="sigTable"></table></div>
+    </div>
+    <div class="axes" id="axes"></div>
+    <div>
+      <h3>候选风格（抽中概率）</h3>
+      <div class="styles" id="styles"></div>
+    </div>
+    <div>
+      <h3>音乐描述</h3>
+      <dl class="spec" id="spec"></dl>
+    </div>
+    <div>
+      <h3>正式版的链路</h3>
+      <ol class="pipe">
+        <li class="now">合成音乐描述（本页已实现）</li>
+        <li>曲库检索 Top 3（本页用浏览器现场合成代替）</li>
+        <li class="now">抓抓写理由 <span id="llmNote"></span></li>
+        <li>后台做歌：Mureka / Lyria 生成 2 个候选</li>
+        <li>千问听歌诊断验收，不达标带意见重做 1 次</li>
+      </ol>
+    </div>
+    <p class="lead">新闻情绪目前是演示值，正式版每天由新闻摘要自动生成。</p>
+  </aside>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="今日猫抓卡">
+  <div class="sheet px">
+    <img id="shareImg" alt="今日猫抓卡">
+    <p>长按或右键图片即可保存。</p>
+    <div class="row">
+      <button class="btn px" id="copyText" type="button">复制文案</button>
+      <button class="btn px primary" id="closeModal" type="button">好</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const wait = ms => new Promise(r => setTimeout(r, ms));
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const pick = (arr, rnd = Math.random) => arr[Math.floor(rnd() * arr.length)];
+
+/* ---------------- 数据：PRD 的映射规则 ---------------- */
+const CITIES = [
+  ["上海",31.23,121.47],["北京",39.90,116.40],["广州",23.13,113.26],["深圳",22.54,114.06],
+  ["杭州",30.27,120.15],["成都",30.57,104.07],["武汉",30.59,114.30],["西安",34.34,108.94],
+  ["重庆",29.56,106.55],["南京",32.06,118.80],["哈尔滨",45.80,126.53],["伦敦",51.51,-0.13],["东京",35.68,139.69]
+];
+const WX = {
+  sunny: {name:"晴",   e:15,  v:20,  styles:["city pop","indie pop","明亮吉他"]},
+  cloudy:{name:"多云", e:0,   v:-5,  styles:["dream pop","轻电子"]},
+  rain:  {name:"雨",   e:-15, v:-10, styles:["lo-fi","爵士钢琴","环境音"]},
+  snow:  {name:"雪",   e:-10, v:10,  styles:["钟琴氛围","弦乐"]}
+};
+const TEMP = {hot:{name:"热（≥30°C）",e:10,v:5,styles:["拉丁","夏日 funk"]}, cold:{name:"冷（≤0°C）",e:-10,v:0,styles:["民谣","木吉他"]}};
+const TIME = {
+  "早上":{e:10,v:10,styles:["轻快流行"]}, "白天":{e:0,v:0,styles:["专注纯音乐"]},
+  "晚上":{e:5,v:0,styles:["R&B"]}, "深夜":{e:-25,v:-5,styles:["ambient","慢速钢琴"]}
+};
+const MOODS = {
+  "开心":{e:20,v:25,styles:[]}, "丧":{e:-15,v:-20,styles:["温暖原声"]}, "累":{e:-20,v:0,styles:["慢速 lo-fi"]},
+  "专注":{e:0,v:0,styles:["极简电子"]}, "想蹦迪":{e:35,v:15,styles:["house","hyperpop"]}, "失眠":{e:-30,v:0,styles:["ambient"]}
+};
+const NEWS = {"轻松":{e:5,v:10,styles:[]}, "沉重":{e:-5,v:-5,styles:["安静氛围"]}, "紧张":{e:0,v:-5,styles:[]}};
+const FAMILY = {
+  "city pop":"pop","indie pop":"pop","明亮吉他":"folk","dream pop":"dream","轻电子":"electro","lo-fi":"lofi",
+  "爵士钢琴":"jazz","环境音":"ambient","钟琴氛围":"bells","弦乐":"ambient","拉丁":"latin","夏日 funk":"pop",
+  "民谣":"folk","木吉他":"folk","轻快流行":"pop","专注纯音乐":"lofi","R&B":"jazz","ambient":"ambient",
+  "慢速钢琴":"jazz","温暖原声":"folk","慢速 lo-fi":"lofi","极简电子":"electro","house":"electro","hyperpop":"electro","安静氛围":"ambient"
+};
+const FAMILY_HINT = {pop:"拨弦 + 鼓组",folk:"琶音吉他",dream:"合成器铺底",electro:"四拍底鼓",lofi:"电钢 + 黑胶噪声",jazz:"电钢 + 行走贝斯",ambient:"长音铺底",bells:"钟琴琶音",latin:"切分打击"};
+
+/* ---------------- 状态 ---------------- */
+const today = new Date();
+const dayKey = "catgrab-" + today.toISOString().slice(0,10);
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem(dayKey)) || null; } catch { return null; } },
+  set(v){ try { localStorage.setItem(dayKey, JSON.stringify(v)); } catch {} }
+};
+const saved = store.get() || {left:3, list:[]};
+const state = {
+  city: CITIES[0], wx: {kind:"sunny", temp:20, isDay:true, live:false, loading:true},
+  mood: null, news: "轻松", skin: 0, left: saved.left, list: saved.list, current: null, busy: false, llm: null
+};
+
+function timeBand(h){ return h>=6&&h<9 ? "早上" : h>=9&&h<18 ? "白天" : h>=18&&h<23 ? "晚上" : "深夜"; }
+const hour = today.getHours();
+const band = timeBand(hour);
+
+/* ---------------- 合成音乐描述 ---------------- */
+function signals(){
+  const noMood = !state.mood;
+  const wW = noMood ? 0.8 : 0.6, wT = noMood ? 0.8 : 0.6;
+  const w = WX[state.wx.kind];
+  const list = [{src:"天气", val:`${w.name} ${state.wx.temp}°C`, w:wW, e:w.e, v:w.v, styles:w.styles, kind:"wx"}];
+  if (state.wx.temp >= 30) list.push({src:"气温", val:TEMP.hot.name, w:wW, ...pickRule(TEMP.hot), kind:"wx"});
+  if (state.wx.temp <= 0)  list.push({src:"气温", val:TEMP.cold.name, w:wW, ...pickRule(TEMP.cold), kind:"wx"});
+  list.push({src:"时段", val:`${band} ${String(hour).padStart(2,"0")}:${String(today.getMinutes()).padStart(2,"0")}`, w:wT, ...pickRule(TIME[band])});
+  if (state.mood) list.push({src:"心情", val:state.mood, w:1.0, ...pickRule(MOODS[state.mood])});
+  list.push({src:"新闻情绪", val:state.news, w:0.4, ...pickRule(NEWS[state.news])});
+  return list;
+}
+function pickRule(r){ return {e:r.e, v:r.v, styles:r.styles}; }
+
+function styleWeights(list){
+  const m = new Map();
+  for (const s of list){
+    let w = s.w;
+    if (state.mood === "开心" && s.kind === "wx") w *= 1.5; // 开心：跟随天气倾向并加亮
+    for (const st of s.styles) m.set(st, (m.get(st)||0) + w);
+  }
+  const total = [...m.values()].reduce((a,b)=>a+b,0) || 1;
+  return [...m.entries()].map(([name,w]) => ({name, p:w/total})).sort((a,b)=>b.p-a.p);
+}
+
+function compose(jitter){
+  const list = signals();
+  let e = 50, v = 50;
+  for (const s of list){ e += s.w*s.e; v += s.w*s.v; }
+  const rnd = Math.random;
+  if (jitter){ e += (rnd()-0.5)*12; v += (rnd()-0.5)*12; }
+  e = Math.round(clamp(e, 5, 95));
+  v = Math.round(clamp(v, 5, 95));
+  if (state.mood === "丧") v = Math.max(v, 30);
+  const weights = styleWeights(list);
+  let style = weights[0] ? weights[0].name : "lo-fi";
+  if (jitter && weights.length){
+    let r = rnd(), acc = 0;
+    for (const w of weights){ acc += w.p; if (r <= acc){ style = w.name; break; } }
+  }
+  const family = FAMILY[style] || "lofi";
+  const bins = [[0,20,60,75],[20,40,75,90],[40,60,90,105],[60,80,105,120],[80,101,120,135]];
+  const bin = bins.find(b => e >= b[0] && e < b[1]) || bins[2];
+  let bpm = jitter ? Math.round(bin[2] + rnd()*(bin[3]-bin[2])) : Math.round((bin[2]+bin[3])/2);
+  if (family === "electro") bpm = Math.max(bpm, 112);
+  const mode = v >= 55 ? "major" : v <= 45 ? "minor" : (jitter ? (rnd()<0.5?"major":"minor") : "major");
+  return {list, weights, energy:e, valence:v, style, family, bpm, mode,
+          root: 55 + Math.floor((jitter?rnd():0.4)*6), seed: Math.floor(rnd()*1e9),
+          wx: state.wx.kind, isDay: state.wx.isDay, temp: state.wx.temp, mood: state.mood, news: state.news,
+          city: state.city[0], band};
+}
+
+/* ---------------- 小猫的话 ---------------- */
+const OPENERS = {
+  "早上":"醒了？本猫已经把今天的唱片翻了一遍。",
+  "白天":"今天想听点什么？先告诉本猫你现在怎么样。",
+  "晚上":"晚上好。今天过得怎么样，挑一个告诉本猫。",
+  "深夜":"这么晚还不睡，那本猫陪你一会。"
+};
+const DIG = ["本猫翻翻……","等一下，在找……","唱片堆里好像有个好东西……","别催，爪子在用力了。"];
+const WX_LINE = {sunny:"太阳太好了", cloudy:"今天云有点厚", rain:"外面在下雨", snow:"外面在下雪"};
+const MOOD_LINE = {"开心":"你心情不错","丧":"你有点丧","累":"你也有点累","专注":"你要专心","想蹦迪":"你想蹦迪","失眠":"你睡不着"};
+const END = {lofi:"这首慢一点，当作毛毯。", jazz:"给你一首懒洋洋的爵士。", ambient:"给你一首安静的，先不听世界了。",
+  bells:"叮叮当当的，像窗外在落东西。", pop:"抓了首会让你想蹦跶的。", latin:"这首有点热，跟着晃一晃。",
+  electro:"鼓点给你备好了，喵。", folk:"木吉他陪你坐一会儿。", dream:"这首软软的，适合发呆。"};
+const TITLE_A = {sunny:["晒过的","向阳的","金色的"], cloudy:["灰蓝色的","云层下的","慢半拍的"], rain:["湿漉漉的","雨声里的","窗玻璃上的"], snow:["落雪的","白茫茫的","呵气成霜的"]};
+const TITLE_N = ["午后","猫爪印","第三杯咖啡","旧磁带","末班公交","便利店","阳台","耳机线","晚风","毛线球","屋顶","明信片"];
+
+function fallbackText(d){
+  const rnd = mulberry32(d.seed);
+  let reason;
+  if (d.news === "沉重" && !d.mood && rnd() < 0.5) reason = "今天外面有点吵，" + END[d.family];
+  else if (d.band === "深夜" && !d.mood) reason = "这么晚了，" + END[d.family];
+  else reason = WX_LINE[d.wx] + (d.mood ? "，" + MOOD_LINE[d.mood] : "") + "，" + END[d.family];
+  const title = pick(TITLE_A[d.wx], rnd) + pick(TITLE_N, rnd);
+  return {title, reason, by:"template"};
+}
+
+// Claude（仅在 claude.ai 页面里可用）
+let samplerP = Promise.resolve(null);
+try { if (window.claude && typeof window.claude.use === "function") samplerP = window.claude.use("sample").catch(() => null); } catch {}
+let samplerOff = false;
+samplerP.then(s => { state.llm = !!s; renderLLMNote(); });
+
+async function askCat(d){
+  const s = await samplerP;
+  if (!s || samplerOff) return null;
+  const prompt = `你是「抓抓」，猫抓音乐 App 里一只住在唱片堆里的橘白像素猫 DJ。性格：有点傲娇、嘴硬心软、只说短句。
+写一句你为什么抓这首歌的理由，规则：
+- 不超过 40 个汉字；必须点到至少一个真实信号（天气、时间、心情、新闻情绪）。
+- 自称“本猫”或不自称，称用户“你”，句尾最多一个“喵”。
+- 不说教，不分析，不提任何具体新闻事件，只说“外面有点吵”这类感受。
+- 用户丧、累、失眠时先陪伴，不说“加油”“开心点”。
+再给这首歌起一个 4 到 10 个字的中文歌名，要有画面感，可以藏进天气或时段。
+
+现在的信号：城市 ${d.city}；天气 ${WX[d.wx].name} ${d.temp}°C；时段 ${d.band}；用户心情：${d.mood || "没说"}；今日新闻情绪：${d.news}。
+你抓到的歌：风格 ${d.style}，${d.bpm} BPM，${d.mode === "major" ? "大调" : "小调"}。
+
+只输出 JSON，不要别的：{"title":"歌名","reason":"理由"}`;
+  try {
+    const res = await Promise.race([s(prompt, {modelTier:"quick"}), wait(15000).then(() => null)]);
+    if (!res || !res.text) return null;
+    const m = res.text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const j = JSON.parse(m[0]);
+    if (typeof j.title !== "string" || typeof j.reason !== "string") return null;
+    return {title: j.title.slice(0, 14), reason: j.reason.slice(0, 60), by:"claude"};
+  } catch (e) {
+    if (e && e.code === "not_granted") { samplerOff = true; state.llm = false; renderLLMNote(); }
+    return null;
+  }
+}
+
+/* ---------------- 音乐引擎：按描述现场合成 ---------------- */
+const PATTERNS = {
+  pop:    {kick:[0,8,10], snare:[4,12], hat:[0,2,4,6,8,10,12,14], chord:[2,6,10,14], chordType:"pluck", chordLen:1.5, bass:[0,6,8], bassLen:2, lead:"pluck"},
+  folk:   {kick:[0], snare:[], hat:[], chord:[], arp:"pluck", bass:[0,8], bassLen:6, lead:"tri", kickVol:.4},
+  dream:  {kick:[0,8], snare:[12], hat:[2,6,10,14], chord:[0], chordType:"pad", chordLen:16, bass:[0], bassLen:14, lead:"bell", kickVol:.6, rev:.45},
+  electro:{kick:[0,4,8,12], snare:[4,12], hat:[2,6,10,14], hat16:true, chord:[3,6,11,14], chordType:"saw", chordLen:1, bass:[2,6,10,14], bassLen:1.5, lead:"square"},
+  lofi:   {kick:[0,7,10], snare:[4,12], hat:[0,2,4,6,8,10,12,14], chord:[0,10], chordType:"ep", chordLen:6, bass:[0,7,10], bassLen:3, lead:"ep", swing:true, crackle:true, lowpass:3000, seventh:true},
+  jazz:   {kick:[0], snare:[], hat:[0,4,6,8,12,14], chord:[0,6], chordType:"ep", chordLen:4, bass:[0,4,8,12], bassLen:3.5, walk:true, lead:"ep", swing:true, kickVol:.45, hatVol:.18, seventh:true},
+  ambient:{kick:[], snare:[], hat:[], chord:[0], chordType:"pad", chordLen:16, bass:[0], bassLen:16, lead:"bell", sparse:true, rev:.55},
+  bells:  {kick:[], snare:[], hat:[], chord:[0], chordType:"pad", chordLen:16, arp:"bell", bass:[0], bassLen:16, lead:null, rev:.5},
+  latin:  {kick:[0,3,8,11], snare:[], hat:[0,3,6,10,12], chord:[], arp:"pluck", bass:[0,6,11], bassLen:2, lead:"tri", hatVol:.3}
+};
+const SCALES = {major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10]};
+const PROGS = {major:[[0,4,5,3],[0,5,3,4],[3,4,2,5],[0,3,4,3]], minor:[[0,5,2,6],[0,3,6,2],[0,6,5,6],[0,3,4,0]]};
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+class Engine {
+  constructor(){ this.ctx = null; this.playing = false; }
+  unlock(){
+    if (!this.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      this.ctx = new AC();
+      const comp = this.ctx.createDynamicsCompressor();
+      this.master = this.ctx.createGain(); this.master.gain.value = 0.7;
+      this.master.connect(comp); comp.connect(this.ctx.destination);
+      this.rev = this.ctx.createConvolver(); this.rev.buffer = this.impulse(2.6);
+      this.revOut = this.ctx.createGain(); this.revOut.gain.value = 1;
+      this.rev.connect(this.revOut); this.revOut.connect(this.master);
+      this.analyser = this.ctx.createAnalyser(); this.analyser.fftSize = 64; this.analyser.smoothingTimeConstant = 0.7; this.master.connect(this.analyser);
+      const len = this.ctx.sampleRate;
+      this.noise = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = this.noise.getChannelData(0); for (let i=0;i<len;i++) d[i] = Math.random()*2-1;
+    }
+    if (this.ctx.state === "suspended") this.ctx.resume().catch(()=>{});
+    return true;
+  }
+  impulse(sec){
+    const r = this.ctx.sampleRate, len = Math.floor(r*sec), b = this.ctx.createBuffer(2, len, r);
+    for (let c=0;c<2;c++){ const d = b.getChannelData(c); for (let i=0;i<len;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/len, 3); }
+    return b;
+  }
+  sOff(d){ const sc = SCALES[this.d.mode]; return sc[((d%7)+7)%7] + 12*Math.floor(d/7); }
+  chord(deg){
+    const P = PATTERNS[this.d.family];
+    const ds = [deg, deg+2, deg+4]; if (P.seventh) ds.push(deg+6);
+    return ds.map(x => { let m = this.d.root + this.sOff(x); if (m > this.d.root + 14) m -= 12; return m; });
+  }
+  play(d){
+    if (!this.unlock()) return;
+    this.stop();
+    this.d = d; const P = PATTERNS[d.family]; this.P = P;
+    const rnd = mulberry32(d.seed);
+    this.prog = pick(PROGS[d.mode], rnd);
+    this.melody = this.genMelody(rnd);
+    const ctx = this.ctx;
+    this.bus = ctx.createGain(); this.bus.gain.setValueAtTime(0.0001, ctx.currentTime); this.bus.gain.exponentialRampToValueAtTime(1, ctx.currentTime + 0.6);
+    this.lp = ctx.createBiquadFilter(); this.lp.type = "lowpass"; this.lp.frequency.value = P.lowpass || 14000;
+    this.send = ctx.createGain(); this.send.gain.value = P.rev || 0.22;
+    this.bus.connect(this.lp); this.lp.connect(this.master); this.lp.connect(this.send); this.send.connect(this.rev);
+    if (P.crackle){
+      const src = ctx.createBufferSource(); src.buffer = this.noise; src.loop = true; src.playbackRate.value = 0.35;
+      const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = 0.7;
+      const g = ctx.createGain(); g.gain.value = 0.035;
+      src.connect(bp); bp.connect(g); g.connect(this.bus); src.start(); this.crackle = src;
+    }
+    this.step = 0; this.start = ctx.currentTime + 0.1; this.next = this.start; this.playing = true;
+    this.timer = setInterval(() => this.tick(), 25);
+    this.tick();
+  }
+  stop(){
+    if (!this.playing) return;
+    this.playing = false; clearInterval(this.timer);
+    const g = this.bus, t = this.ctx.currentTime;
+    g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+    if (this.crackle){ try { this.crackle.stop(t + 0.4); } catch {} this.crackle = null; }
+    setTimeout(() => { try { g.disconnect(); } catch {} }, 800);
+  }
+  elapsed(){ return this.playing ? Math.max(0, this.ctx.currentTime - this.start) : 0; }
+  beat(){ if (!this.playing) return 0; const spb = 60/this.d.bpm; return (this.elapsed()/spb) % 1; }
+  genMelody(rnd){
+    const d = this.d, P = PATTERNS[d.family];
+    const pent = d.mode === "major" ? [0,1,2,4,5] : [0,2,3,4,6];
+    const density = P.sparse ? 0.16 : 0.22 + d.energy/240;
+    const bar = () => {
+      const a = Array(16).fill(null);
+      let idx = Math.floor(rnd()*pent.length) + 2;
+      for (let p = 0; p < 16; p += 2){
+        if (p === 0 || rnd() < density){
+          idx = clamp(idx + Math.round((rnd()-0.5)*3.2), 0, pent.length*2 - 1);
+          const deg = pent[idx % pent.length] + 7*Math.floor(idx / pent.length);
+          const len = rnd() < 0.3 ? 4 : 2;
+          a[p] = {deg, len};
+          if (len === 4) p += 2;
+        }
+      }
+      return a;
+    };
+    const A = bar(), B = bar(), C = bar(), D = bar(), E = bar();
+    return [A,B,C,D,A,B,E,D];
+  }
+  tick(){
+    const s16 = 60 / this.d.bpm / 4;
+    while (this.playing && this.next < this.ctx.currentTime + 0.14){
+      let t = this.next;
+      if (this.P.swing && this.step % 2 === 1) t += s16 * 0.33;
+      this.playStep(this.step, t, s16);
+      this.next += s16; this.step++;
+    }
+  }
+  playStep(step, t, s16){
+    const d = this.d, P = this.P, pos = step % 16, bar = Math.floor(step/16) % 8;
+    const deg = this.prog[bar % 4], ch = this.chord(deg);
+    const vol = 0.6 + d.energy/250;
+    const intro = step < 32;
+    if (!intro || pos === 0){
+      if (P.kick.includes(pos)) this.kick(t, (P.kickVol || 0.9)*vol);
+      if (P.snare.includes(pos)) this.snare(t, 0.5*vol);
+    }
+    if (!intro && (P.hat.includes(pos) || (P.hat16 && d.energy > 70 && pos % 2 === 1))) this.hat(t, (P.hatVol || 0.22)*vol);
+    if (P.chord.includes(pos)) ch.forEach(n => this.voice(P.chordType, n, t, s16*P.chordLen, 0.28/ch.length*2));
+    if (P.arp && pos % 2 === 0){ const n = ch[(pos/2) % ch.length] + (P.arp === "bell" ? 12 : 0); this.voice(P.arp, n, t, s16*2, P.arp === "bell" ? 0.09 : 0.14); }
+    if (P.bass.includes(pos)){
+      let n = this.d.root - 12 + this.sOff(deg);
+      if (P.walk){ const nextDeg = this.prog[(bar+1) % 4]; const steps = [deg, deg+2, deg+4, nextDeg+1]; n = this.d.root - 12 + this.sOff(steps[pos/4]); }
+      while (n > this.d.root - 5) n -= 12;
+      this.bass(n, t, s16*P.bassLen);
+    }
+    if (P.lead && !intro){ const m = this.melody[bar][pos]; if (m) this.voice(P.lead, this.d.root + 12 + this.sOff(m.deg), t, m.len*s16, 0.16); }
+  }
+  osc(type, f, t, attack, decay, vel, cut, detune){
+    const ctx = this.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = f; if (detune) o.detune.value = detune;
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vel, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay);
+    let node = o;
+    if (cut){ const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = cut; o.connect(lp); node = lp; }
+    node.connect(g); g.connect(this.bus);
+    o.start(t); o.stop(t + attack + decay + 0.05);
+  }
+  voice(type, m, t, dur, vel){
+    const f = mtof(m);
+    switch (type){
+      case "pluck": this.osc("triangle", f, t, .004, Math.min(dur+.15,.5), vel); this.osc("square", f, t, .004, .12, vel*.18, 2400); break;
+      case "tri":   this.osc("triangle", f, t, .01, dur + .2, vel); break;
+      case "ep":    this.osc("sine", f, t, .006, dur + .5, vel); this.osc("sine", f*2, t, .004, .35, vel*.25); break;
+      case "bell":  this.osc("sine", f*2, t, .003, 1.8, vel*.8); this.osc("sine", f*5.4, t, .002, .5, vel*.12); break;
+      case "square":this.osc("square", f, t, .005, Math.min(dur,.35), vel*.5, 2600); break;
+      case "saw":   this.osc("sawtooth", f, t, .004, .22, vel*.5, 1700); break;
+      case "pad":   this.osc("sawtooth", f, t, .6, dur + 1.2, vel*.35, 900, -7); this.osc("sawtooth", f, t, .6, dur + 1.2, vel*.35, 900, 7); break;
+    }
+  }
+  bass(m, t, dur){ this.osc(this.d.family === "electro" ? "sawtooth" : "triangle", mtof(m), t, .008, dur + .1, .42, this.d.family === "electro" ? 500 : 900); }
+  kick(t, vel){
+    const ctx = this.ctx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + .12);
+    g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + .32);
+    o.connect(g); g.connect(this.bus); o.start(t); o.stop(t + .35);
+  }
+  noiseHit(t, type, freq, vel, decay){
+    const ctx = this.ctx, src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = this.noise; f.type = type; f.frequency.value = freq;
+    g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    src.connect(f); f.connect(g); g.connect(this.bus); src.start(t, Math.random()*0.5); src.stop(t + decay + .02);
+  }
+  snare(t, vel){ this.noiseHit(t, "bandpass", 1800, vel*.7, .18); this.osc("triangle", 185, t, .002, .08, vel*.35); }
+  hat(t, vel){ this.noiseHit(t, "highpass", 7000, vel*.35, .045); }
+}
+const engine = new Engine();
+
+/* ---------------- 像素小猫（大头、粉耳、腮红、卷尾） ---------------- */
+const BODY = [
+  "..OO..........OO......",
+  ".OppO........OppO.....",
+  ".OpooOOOOOOOOoopO.....",
+  ".OooooodoodoooooO.....",
+  ".OoooooooddooooooO....",
+  ".OooohеooooheoooO.....",
+  ".OoooeeooooeeoooO.....",
+  ".OobbowwppwwobboO.....",
+  ".OoowwwOwwOwwwooO.....",
+  ".OooowwwOOwwwoooO.....",
+  "..OoowwwwwwwwooO......",
+  "...OowwwwwwwwoO.......",
+  "...OoowwwwwwooO.......",
+  "..OooowwwwwwoooO......",
+  "..OooowwwwwwoooO......",
+  "..OodOwwOOwwOdoO......",
+  "..OodOwwOOwwOdoO......",
+  "..OodOwwOOwwOdoO......",
+  "..OooOwwOOwwOooO......",
+  "...OOOOOOOOOOOO......."
+].map(r => r.replace(/е/g, "e").slice(0, 22).padEnd(22, "."));
+// 第 3–9 行按「.O + 14 格 + O」重新校正，保证左右对称
+(function fixHead(){
+  const mid = ["ooooodoodooooo","ooooooddoooooo","ooohеooooheooo".replace(/е/g,"e"),"oooeeooooeeooo","obbowwppwwobbo","oowwwOwwOwwwoo","ooowwwOOwwwooo"];
+  mid.forEach((m, i) => { BODY[3 + i] = (".O" + m + "O").padEnd(22, "."); });
+})();
+
+const SKINS = [
+  {name:"橘白", pal:{O:"#2b1a12", o:"#f29b38", d:"#c8691c", w:"#fff1dc", p:"#ff8fa3", b:"#ffa7b5", e:"#1b1020", h:"#ffffff"}},
+  {name:"三花", pal:{O:"#2a1a14", o:"#fff4e6", d:"#3e2a22", w:"#fff4e6", p:"#ff9fa8", b:"#ffb3b8", e:"#1b1020", h:"#ffffff", q:"#e8913a"},
+   patch:{d:[[2,3],[3,3],[4,3],[2,4],[3,4],[4,4],[5,4],[2,5],[3,5],[13,13],[14,13],[13,14],[14,14],[14,12]], q:[[11,3],[12,3],[13,3],[14,3],[12,4],[13,4],[14,4],[14,5],[14,6],[3,13],[3,14],[4,13],[4,14],[3,15],[3,16]]}},
+  {name:"蓝灰", pal:{O:"#1e2a33", o:"#6f93a8", d:"#557a8f", w:"#bcd5e0", p:"#ff8fa3", b:"#ff9fb3", e:"#141c22", h:"#ffffff"}},
+  {name:"奶白", pal:{O:"#3a4650", o:"#e4f3f3", d:"#c4dddd", w:"#ffffff", p:"#ff8fa3", b:"#ffb3c0", e:"#2a3038", h:"#ffffff"}},
+  {name:"暹罗", pal:{O:"#2b1a12", o:"#f2dfc4", d:"#5b3a2c", w:"#faefe0", p:"#5b3a2c", b:"#e8b4a8", e:"#1b1020", h:"#9fd3ff"},
+   patch:{d:[[6,8],[7,8],[10,8],[11,8],[6,9],[7,9],[10,9],[11,9],[5,18],[6,18],[11,18],[12,18]]}},
+  {name:"可可", pal:{O:"#1f0f0d", o:"#7a3a2e", d:"#5c2722", w:"#b5705f", p:"#ff8fa3", b:"#e58a8a", e:"#140808", h:"#ffffff"}}
+];
+const CW = 26, CH = 20, OX = 3;
+const TAILS = [
+  [[15,17],[16,16],[17,15],[17,14],[18,13],[18,12],[18,11],[18,10],[17,9],[16,9]],
+  [[15,17],[16,16],[17,15],[18,14],[19,13],[19,12],[19,11],[19,10],[18,9],[17,9]]
+];
+const ARM = [[4,12],[3,11],[2,10],[1,9],[1,8]];
+
+function buildCat(skin, {closed = false, pawUp = false, wag = 0} = {}){
+  const g = Array.from({length: CH}, () => Array(CW).fill("."));
+  BODY.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== ".") g[y][x + OX] = ch; }));
+  if (skin.patch) for (const [k, cells] of Object.entries(skin.patch)) cells.forEach(([x, y]) => { if (g[y][x + OX] !== "O") g[y][x + OX] = k; });
+  if (closed){ for (const x of [5,6,11,12]){ g[5][x + OX] = "o"; g[6][x + OX] = "O"; } }
+  const added = [];
+  const put = (x, y, c, onlyEmpty) => { if (x < 0 || y < 0 || x >= CW || y >= CH) return; if (onlyEmpty && g[y][x] !== ".") return; g[y][x] = c; added.push([x, y]); };
+  const tail = TAILS[wag ? 1 : 0];
+  tail.forEach(([x, y], i) => { const c = i >= tail.length - 3 ? "d" : "o"; put(x + OX, y, c, true); put(x + OX + 1, y, c, true); });
+  if (pawUp){
+    for (let y = 15; y <= 18; y++) for (const x of [6,7,8]) g[y][x] = "o";
+    ARM.forEach(([x, y]) => { put(x, y, "o"); put(x + 1, y, "o"); });
+    put(1, 7, "w"); put(2, 7, "w");
+  }
+  for (const [x, y] of added) for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const nx = x + dx, ny = y + dy;
+    if (nx >= 0 && ny >= 0 && nx < CW && ny < CH && g[ny][nx] === ".") g[ny][nx] = "O";
+  }
+  return g;
+}
+function drawGrid(ctx, g, x, y, pal, s = 1){
+  for (let r = 0; r < g.length; r++) for (let c = 0; c < g[r].length; c++){
+    const ch = g[r][c]; if (ch === "." || !pal[ch]) continue;
+    ctx.fillStyle = pal[ch]; ctx.fillRect(x + c*s, y + r*s, s, s);
+  }
+}
+const RECORD = ["..XXXX..",".XXgXXX.","XXXXXXXX","XgXLLXXX","XXXLLXgX","XXXXXXXX",".XXXgXX.","..XXXX.."];
+const NOTE = ["..XX","..X.","..X.","XXX.","XX.."];
+const ZED = ["XXX",".X.","XXX"];
+const MOON = [".XX","XX.","X..","XX.",".XX"];
+const SUN = [".XXX.","XXXXX","XXXXX","XXXXX",".XXX."];
+const CLOUD = ["..XXX...",".XXXXX.X","XXXXXXXX"];
+function sprite(ctx, rows, x, y, pal){
+  for (let r = 0; r < rows.length; r++) for (let c = 0; c < rows[r].length; c++){
+    const ch = rows[r][c]; if (ch !== "." && pal[ch]){ ctx.fillStyle = pal[ch]; ctx.fillRect(Math.round(x + c), Math.round(y + r), 1, 1); }
+  }
+}
+
+/* ---------------- 房间场景 ---------------- */
+const cv = $("#scene"), cx = cv.getContext("2d");
+const SW = 80, SH = 52, FLOOR = 40;
+const scene = {
+  st: "idle", t0: 0, catX: 26, targetX: 26, recColor: "#ff9a4d", blinkAt: 0, bits: [],
+  set(st){ this.st = st; this.t0 = performance.now(); this.targetX = st === "dig" ? 38 : 26; if (st === "dig") this.bits = []; }
+};
+const SKY = {sunny:["#7ec8f0","#1b2858"], cloudy:["#93a6bd","#212946"], rain:["#5a6d8f","#1a203e"], snow:["#b9c9dd","#283054"]};
+const drops = Array.from({length:16}, () => ({x: Math.random()*22, y: Math.random()*16, s: 0.5 + Math.random()*0.5}));
+const STARS = [[8,11],[12,14],[24,21],[9,21],[14,10],[26,12]];
+const BULBS = ["#ffd75e","#ff9fb3","#8fe3cf","#ff9a4d"];
+const CRATE_RECS = ["#ff9fb3","#8fe3cf","#ffd75e","#9aa7ff","#ff9a4d","#c9f07e"];
+const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function rect(x, y, w, h, c){ cx.fillStyle = c; cx.fillRect(x, y, w, h); }
+
+function drawRoom(t){
+  const k = state.wx.kind, day = state.wx.isDay;
+  // 墙
+  rect(0, 0, SW, FLOOR, "#2a2052");
+  for (let x = 3; x < SW; x += 6) rect(x, 0, 1, 32, "#2e2558");
+  rect(0, 32, SW, 8, "#241b47"); rect(0, 32, SW, 1, "#3a2f6b");
+  // 地板
+  rect(0, FLOOR, SW, SH - FLOOR, "#3d2c5e"); rect(0, FLOOR, SW, 1, "#4f3b78");
+  rect(0, 45, SW, 1, "#362756"); rect(0, 49, SW, 1, "#362756");
+  for (const [x, y] of [[14,41],[40,41],[66,41],[27,46],[55,46],[8,50],[46,50]]) rect(x, y, 1, 4, "#362756");
+  // 窗光落在地上
+  const lc = day && k === "sunny" ? "#4c3a7e" : "#43336b";
+  for (let y = FLOOR + 1; y < SH; y++){ const x0 = 7 + (y - FLOOR), x1 = 26 + (y - FLOOR); for (let x = x0; x < x1; x++) if ((x + y) % 2 === 0) rect(x, y, 1, 1, lc); }
+  // 窗与窗帘
+  rect(2, 7, 30, 1, "#6b4a36");
+  rect(5, 8, 24, 18, "#5b4a8a");
+  cx.save(); cx.beginPath(); cx.rect(6, 9, 22, 16); cx.clip();
+  rect(6, 9, 22, 16, SKY[k][day ? 0 : 1]);
+  if (!day && k !== "rain") STARS.forEach(([x, y], i) => { if (reduceMotion || Math.floor(t*1.5 + i) % 3) rect(x, y, 1, 1, "#e6e0ff"); });
+  if (k === "sunny") day ? sprite(cx, SUN, 20, 11, {X:"#ffd75e"}) : sprite(cx, MOON, 22, 11, {X:"#f4ecd8"});
+  if (k !== "sunny"){
+    const c = k === "rain" ? "#76839f" : day ? "#eef2f8" : "#56608a";
+    const off = reduceMotion ? 0 : (t*1.5) % 34;
+    sprite(cx, CLOUD, 6 + ((2 + off) % 34) - 6, 11, {X:c});
+    sprite(cx, CLOUD, 6 + ((19 + off) % 34) - 6, 15, {X:c});
+  }
+  if (k === "rain") drops.forEach(d => rect(6 + d.x, 9 + ((d.y + t*24*d.s) % 16), 1, 2, "#b8d2ff"));
+  if (k === "snow") drops.forEach(d => rect(6 + ((d.x + Math.sin(t + d.y)*1.5 + 22) % 22), 9 + ((d.y + t*5*d.s) % 16), 1, 1, "#ffffff"));
+  cx.restore();
+  rect(16, 9, 1, 16, "#5b4a8a"); rect(6, 16, 22, 1, "#5b4a8a");
+  rect(4, 26, 26, 2, "#4a3c78");
+  for (const x0 of [2, 28]){ rect(x0, 8, 4, 19, "#9a4a6e"); rect(x0 + (x0 === 2 ? 2 : 1), 8, 1, 19, "#7a3656"); }
+  // 灯串
+  for (let x = 0; x < SW; x++){
+    const y = 1 + Math.round(Math.sin(((x % 20) / 20) * Math.PI) * 2.5);
+    rect(x, y, 1, 1, "#120d24");
+    if (x % 5 === 2){
+      const i = Math.floor(x / 5), on = reduceMotion || (i + Math.floor(t * 2)) % 4 !== 0;
+      rect(x, y + 1, 1, 1, on ? BULBS[i % 4] : "#4a4066");
+    }
+  }
+  // 墙上的唱片架和小仙人掌
+  rect(50, 16, 27, 1, "#6b4a36"); rect(52, 17, 1, 2, "#5a3c2c"); rect(74, 17, 1, 2, "#5a3c2c");
+  [["#ff9fb3",52],["#8fe3cf",57],["#ffd75e",62],["#9aa7ff",67]].forEach(([c, x]) => { rect(x, 10, 4, 6, c); rect(x + 1, 11, 2, 1, "#ffffff55"); });
+  rect(72, 13, 3, 3, "#b0603a"); rect(73, 10, 1, 3, "#5fbf7a"); rect(72, 11, 1, 1, "#5fbf7a"); rect(74, 11, 1, 1, "#3f9a5a");
+  // 地上的盆栽
+  rect(2, 35, 6, 5, "#b0603a"); rect(1, 35, 8, 1, "#c87048");
+  for (const [x, y, c] of [[4,30,"#5fbf7a"],[4,31,"#5fbf7a"],[3,32,"#3f9a5a"],[5,32,"#5fbf7a"],[2,33,"#5fbf7a"],[6,33,"#3f9a5a"],[4,33,"#3f9a5a"],[1,31,"#3f9a5a"],[7,31,"#5fbf7a"],[3,34,"#5fbf7a"],[5,34,"#5fbf7a"]]) rect(x, y, 1, 1, c);
+  // 地毯
+  rect(19, 41, 34, 1, "#5a3f86"); rect(17, 42, 38, 1, "#5a3f86"); rect(19, 43, 34, 1, "#5a3f86");
+  for (let x = 19; x < 53; x += 4) rect(x, 42, 2, 1, "#6e52a0");
+  // 唱片箱
+  const digging = scene.st === "dig";
+  CRATE_RECS.forEach((c, i) => { const j = digging && !reduceMotion ? Math.round(Math.sin(t*22 + i)) : 0; rect(60 + i*3, 29 - (i % 3) + j, 2, 8, c); });
+  rect(58, 35, 20, 7, "#8a5a3a"); rect(58, 35, 20, 1, "#a06a46"); rect(58, 38, 20, 1, "#6b432a"); rect(58, 41, 20, 1, "#5a3826");
+}
+
+function drawScene(now){
+  const t = now / 1000;
+  drawRoom(t);
+  scene.catX += (scene.targetX - scene.catX) * 0.15;
+  const x = Math.round(scene.catX); let y = FLOOR + 2 - CH;
+  const since = now - scene.t0;
+  let closed = false, pawUp = false, rec = false;
+  const playing = scene.st === "hold" && engine.playing;
+  if (scene.st === "idle" || scene.st === "hold"){
+    if (now > scene.blinkAt){ if (now > scene.blinkAt + 140) scene.blinkAt = now + 2200 + Math.random()*2600; else closed = true; }
+  }
+  if (scene.st === "sleep"){ closed = true; y += Math.sin(t*2) > 0.3 ? 1 : 0; }
+  if (scene.st === "dig"){ y += Math.floor(since/120) % 2; pawUp = Math.floor(since/180) % 2 === 0;
+    if (!reduceMotion && Math.random() < 0.2) scene.bits.push({x: 66, y: 30, vx: -0.5 - Math.random(), vy: -1.3 - Math.random(), c: pick(CRATE_RECS)}); }
+  if (scene.st === "grab" || scene.st === "hold"){ pawUp = true; rec = true; }
+  if (playing && !reduceMotion) y += engine.beat() < 0.25 ? 1 : 0;
+  const wag = Math.floor(t * (playing ? 4 : 1.2)) % 2;
+  const skin = SKINS[state.skin];
+  const g = buildCat(skin, {closed, pawUp, wag});
+  if (rec) sprite(cx, RECORD, x - 3, y - 1 - (scene.st === "grab" ? 2 : 0), {X:"#1a1424", L:scene.recColor, g:"#3a2f55"});
+  drawGrid(cx, g, x, y, skin.pal);
+  for (const b of scene.bits){ b.x += b.vx; b.y += b.vy; b.vy += 0.12; rect(Math.round(b.x), Math.round(b.y), 2, 1, b.c); }
+  scene.bits = scene.bits.filter(b => b.y < SH);
+  if (scene.st === "sleep") sprite(cx, ZED, x + 19, Math.round(y - 2 - ((t*3) % 8)), {X:"#c8c2e8"});
+  if (playing && !reduceMotion){
+    for (let i = 0; i < 2; i++){ const p = (t*0.5 + i*0.5) % 1; sprite(cx, NOTE, x + 22 + i*6 + Math.round(Math.sin(p*6)*2), Math.round(y + 6 - p*20), {X: i ? "#8fe3cf" : "#ffd75e"}); }
+  }
+  $("#bubbleBox").style.setProperty("--tip", ((x + 11) / SW * 100).toFixed(1) + "%");
+}
+
+/* ---------------- 封面、频谱与分享卡 ---------------- */
+const FAM_COLOR = {pop:["#ff8fa8","#ffd75e"], folk:["#c98f5a","#ffe2b0"], dream:["#8e9bff","#ffc8f0"], electro:["#4a3be0","#8fe3cf"],
+  lofi:["#6c5a8f","#ffb27a"], jazz:["#2f4a7b","#ffd75e"], ambient:["#2c4d66","#bfe6ff"], bells:["#9fb4ff","#fff4c2"], latin:["#ff6f45","#ffe066"]};
+function drawCover(canvas, d){
+  const c = canvas.getContext("2d"), [A, B] = FAM_COLOR[d.family], ink = "#fff6e0";
+  c.fillStyle = "#15102a"; c.fillRect(0, 0, 16, 16);
+  for (let y = 0; y < 16; y++) for (let x = 6; x < 16; x++){
+    const r = Math.hypot(x - 11.5, y - 7.5);
+    if (r <= 6.2){ c.fillStyle = r <= 1.6 ? B : (r > 3.4 && r < 4.4) ? "#3a2f55" : "#1a1424"; c.fillRect(x, y, 1, 1); }
+  }
+  c.fillStyle = A; c.fillRect(0, 0, 11, 16);
+  c.fillStyle = B; for (let y = 11; y < 16; y++) for (let x = 0; x < 11; x++) if ((x + y) % 2 === 0) c.fillRect(x, y, 1, 1);
+  c.fillStyle = "#ffffff30"; c.fillRect(0, 0, 1, 16);
+  c.fillStyle = ink;
+  if (d.wx === "sunny" && d.isDay){ c.fillRect(3, 3, 3, 3); c.fillRect(4, 1, 1, 1); c.fillRect(4, 7, 1, 1); c.fillRect(1, 4, 1, 1); c.fillRect(7, 4, 1, 1); }
+  else if (d.wx === "sunny"){ sprite(c, MOON, 4, 2, {X:ink}); }
+  if (d.wx === "cloudy"){ sprite(c, CLOUD, 1, 3, {X:ink}); }
+  if (d.wx === "rain"){ sprite(c, CLOUD, 1, 2, {X:ink}); c.fillStyle = B; for (const [x, y] of [[2,6],[5,7],[8,6],[3,9],[7,9]]) c.fillRect(x, y, 1, 1); }
+  if (d.wx === "snow"){ for (const [x, y] of [[2,2],[6,3],[4,5],[8,6],[1,7],[6,8]]) c.fillRect(x, y, 1, 1); }
+}
+function drawViz(canvas){
+  const c = canvas.getContext("2d"), W = canvas.width, H = canvas.height;
+  c.clearRect(0, 0, W, H);
+  const on = engine.playing && state.current && engine.d === state.current.desc && engine.analyser;
+  let data = null;
+  if (on){ data = new Uint8Array(engine.analyser.frequencyBinCount); engine.analyser.getByteFrequencyData(data); }
+  for (let i = 0; i < W / 2; i++){
+    const v = data ? data[Math.min(data.length - 1, 1 + Math.floor(i * 0.5))] / 255 : 0;
+    const h = Math.max(1, Math.round(v * H));
+    c.fillStyle = i % 2 ? "#8fe3cf" : "#6fcbb6";
+    c.fillRect(i*2, H - h, 1, h);
+    if (h > 2){ c.fillStyle = "#f4ecd8"; c.fillRect(i*2, H - h, 1, 1); }
+  }
+}
+
+async function makeShareCard(item){
+  try { await document.fonts.ready; } catch {}
+  const S = 2, W = 360, H = 580, d = item.desc, [A, B] = FAM_COLOR[d.family];
+  const c = document.createElement("canvas"); c.width = W*S; c.height = H*S;
+  const g = c.getContext("2d"); g.scale(S, S); g.imageSmoothingEnabled = false;
+  g.fillStyle = "#15102a"; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#221a3e"; g.fillRect(16, 16, W - 32, H - 32);
+  g.fillStyle = "#3d3168"; g.fillRect(16, 16, W - 32, 2); g.fillRect(16, H - 18, W - 32, 2); g.fillRect(16, 16, 2, H - 32); g.fillRect(W - 18, 16, 2, H - 32);
+  g.fillStyle = "#f4ecd8"; g.font = "30px 'ZCOOL QingKe HuangYou', sans-serif"; g.fillText("今日猫抓", 36, 66);
+  g.fillStyle = "#ff9a4d"; g.font = "12px Silkscreen, monospace"; g.fillText(`${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`, W - 36 - g.measureText(`${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`).width, 64);
+  g.fillStyle = "#a89ec8"; g.font = "13px 'Noto Sans SC', sans-serif";
+  g.fillText(`${d.city} · ${WX[d.wx].name} ${d.temp}°C · ${d.band} · 心情：${d.mood || "没说"}`, 36, 92);
+  // 画面：底色 + 抓抓举着唱片
+  g.fillStyle = "#2a2052"; g.fillRect(36, 108, W - 72, 176);
+  g.fillStyle = "#3d2c5e"; g.fillRect(36, 252, W - 72, 32);
+  const art = document.createElement("canvas"); art.width = 34; art.height = 24; const ac = art.getContext("2d");
+  const skin = SKINS[state.skin];
+  sprite(ac, RECORD, 1, 2, {X:"#1a1424", L:B, g:"#3a2f55"});
+  drawGrid(ac, buildCat(skin, {pawUp:true, wag:1}), 4, 3, skin.pal);
+  g.drawImage(art, 60, 112, 34*6, 24*6);
+  const cov = document.createElement("canvas"); cov.width = 16; cov.height = 16; drawCover(cov, d);
+  g.drawImage(cov, W - 36 - 16 - 64, 196, 64, 64);
+  g.fillStyle = "#f4ecd8"; g.font = "30px 'ZCOOL QingKe HuangYou', sans-serif"; g.fillText(item.title, 36, 330);
+  g.fillStyle = "#8fe3cf"; g.font = "11px Silkscreen, monospace";
+  g.fillText(`${d.style.toUpperCase()} · ${d.bpm} BPM · ${d.mode === "major" ? "MAJOR" : "MINOR"}`, 36, 354);
+  g.fillStyle = "#2c2350"; g.fillRect(36, 372, W - 72, 104);
+  g.fillStyle = "#ff9a4d"; g.font = "12px 'Noto Sans SC', sans-serif"; g.fillText("抓抓说", 50, 394);
+  g.fillStyle = "#f4ecd8"; g.font = "15px 'Noto Sans SC', sans-serif";
+  wrapText(g, item.reason, 50, 420, W - 100, 24);
+  g.fillStyle = "#a89ec8"; g.font = "13px 'Noto Sans SC', sans-serif"; g.fillText("猫抓音乐 · 每天替你抓一首", 36, H - 44);
+  g.fillStyle = A; g.fillRect(W - 36 - 40, H - 56, 40, 14); g.fillStyle = B; g.fillRect(W - 36 - 40, H - 52, 40, 2);
+  return c.toDataURL("image/png");
+}
+function wrapText(g, text, x, y, maxW, lh){
+  let line = "";
+  for (const ch of text){ if (g.measureText(line + ch).width > maxW){ g.fillText(line, x, y); y += lh; line = ch; } else line += ch; }
+  if (line) g.fillText(line, x, y);
+}
+
+/* ---------------- 界面 ---------------- */
+function say(text){ $("#bubble").textContent = text; }
+const pawSvg = used => `<svg class="${used ? "used" : ""}" aria-hidden="true"><use href="#i-paw"/></svg>`;
+
+function renderSignals(){
+  $("#tbText").textContent = `${band} ${String(hour).padStart(2,"0")}:${String(today.getMinutes()).padStart(2,"0")}`;
+  const w = state.wx;
+  $("#wxDot").className = "dot" + (w.live ? "" : " off");
+  if (w.loading){ $("#wxText").textContent = "读取中"; $("#wxText").hidden = false; $("#wxManual").hidden = true; return; }
+  $("#wxText").hidden = !w.live; $("#wxManual").hidden = w.live;
+  $("#wxText").textContent = `${WX[w.kind].name} ${w.temp}°C`;
+  $("#wxManual").value = w.kind;
+  $("#status").textContent = w.live
+    ? `实时天气来自 Open-Meteo（${state.city[0]}）。`
+    : `这个页面不能联网取天气，先手动选一个；本地打开或部署后会读实时天气。`;
+}
+
+function renderMoods(){
+  const box = $("#moods"); box.innerHTML = "";
+  Object.keys(MOODS).forEach(m => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "mood px"; b.textContent = m; b.setAttribute("aria-pressed", state.mood === m);
+    b.addEventListener("click", () => { state.mood = state.mood === m ? null : m; renderMoods(); if (!state.current) renderBackstage(); });
+    box.appendChild(b);
+  });
+}
+
+function renderLeft(){
+  $("#paws").innerHTML = [0,1,2].map(i => pawSvg(i >= state.left)).join("");
+  $("#leftText").textContent = state.left > 0 ? `今天还能抓 ${state.left} 次` : "演示：点这里重置";
+  $("#grab").textContent = state.current ? "再抓一次" : "抓一首";
+  $("#left").tabIndex = state.left === 0 ? 0 : -1;
+  $("#left").style.cursor = state.left === 0 ? "pointer" : "default";
+}
+
+function renderSkin(){
+  const s = SKINS[state.skin];
+  $("#skinName").textContent = s.name;
+  $("#skinDot").style.background = s.pal.q || s.pal.o;
+}
+
+const fmt = (n, sign) => (sign && n > 0 ? "+" : "") + (Math.round(n*10)/10);
+function renderBackstage(d){
+  const show = d || compose(false);
+  const rows = show.list.map(s => {
+    const ce = s.w*s.e, cv2 = s.w*s.v;
+    return `<tr><td>${s.src}</td><td>${s.val}</td><td class="r">×${s.w}</td><td class="r ${ce>0?"pos":ce<0?"neg":""}">${fmt(ce,1)}</td><td class="r ${cv2>0?"pos":cv2<0?"neg":""}">${fmt(cv2,1)}</td></tr>`; }).join("");
+  $("#sigTable").innerHTML = `<thead><tr><th>信号</th><th>取值</th><th class="r">权重</th><th class="r">能量</th><th class="r">效价</th></tr></thead><tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="3">基准 50 + 加权合计${d ? " + 随机扰动" : ""}</td><td class="r">${show.energy}</td><td class="r">${show.valence}</td></tr></tfoot>`;
+  $("#axes").innerHTML = `<div class="axis"><span>能量</span><div class="bar"><i style="width:${show.energy}%"></i></div><b>${show.energy}</b></div>
+    <div class="axis"><span>效价</span><div class="bar v"><i style="width:${show.valence}%"></i></div><b>${show.valence}</b></div>`;
+  $("#styles").innerHTML = show.weights.map(w => `<span class="sty px${d && w.name === d.style ? " on" : ""}">${w.name}<em>${Math.round(w.p*100)}%</em></span>`).join("");
+  $("#spec").innerHTML = d
+    ? `<dt>风格</dt><dd>${d.style}（${FAMILY_HINT[d.family]}）</dd><dt>速度</dt><dd>${d.bpm} BPM</dd><dt>调式</dt><dd>${d.mode === "major" ? "大调" : "小调"}</dd><dt>来源</dt><dd>浏览器现场合成（演示「小猫自己做歌」）</dd>`
+    : `<dt>状态</dt><dd>还没抓。上面是按当前信号算出的预览，抓的时候会加一点随机扰动。</dd>`;
+}
+function renderLLMNote(){
+  $("#llmNote").textContent = state.llm ? "（本页：Claude 实时生成）" : state.llm === false ? "（本页：话术库模板，此环境没有接大模型）" : "";
+}
+
+function playItem(item){
+  engine.unlock(); engine.play(item.desc);
+  scene.recColor = FAM_COLOR[item.desc.family][1]; scene.set("hold");
+}
+function syncPlay(){
+  const b = document.getElementById("play"); if (!b || !state.current) return;
+  const on = engine.playing && engine.d === state.current.desc;
+  b.innerHTML = `<svg aria-hidden="true"><use href="#i-${on ? "pause" : "play"}"/></svg>`;
+  b.setAttribute("aria-label", on ? "暂停" : "播放");
+}
+
+function renderCard(item){
+  const card = $("#card");
+  if (!item){ card.className = "card px empty"; card.textContent = "点「抓一首」，抓抓会去唱片堆里翻一首给你。"; return; }
+  const d = item.desc, n = state.list.indexOf(item) + 1;
+  card.className = "card px";
+  card.innerHTML = `<div class="cardtop"><canvas class="cover" width="16" height="16" aria-hidden="true"></canvas>
+      <div><p class="kicker">GRAB #${n} · ${today.getMonth()+1}/${today.getDate()}</p><h2 class="title"></h2>
+      <div class="tags"><span class="tag">${d.style}</span><span class="tag num">${d.bpm} BPM</span><span class="tag">${d.mode === "major" ? "大调" : "小调"}</span></div></div></div>
+    <p class="reason"></p>
+    <div class="player"><button class="playbtn px" id="play" type="button"></button><canvas class="viz" id="viz" width="48" height="10" aria-hidden="true"></canvas><span class="time" id="time">0:00</span></div>
+    <div class="actions"><button class="btn px" id="fav" type="button" aria-pressed="${!!item.fav}">${item.fav ? "已收藏" : "收藏"}</button><button class="btn px" id="share" type="button">生成今日卡片</button></div>`;
+  card.querySelector(".title").textContent = item.title;
+  card.querySelector(".reason").textContent = item.reason;
+  drawCover(card.querySelector(".cover"), d);
+  syncPlay();
+  $("#play").addEventListener("click", () => {
+    if (engine.playing && engine.d === d){ engine.stop(); } else playItem(item);
+    syncPlay();
+  });
+  $("#fav").addEventListener("click", () => {
+    item.fav = !item.fav; persist(); renderCard(item); renderToday();
+    if (item.fav) say("记下来了，你的口味本猫有数了。");
+  });
+  $("#share").addEventListener("click", async () => {
+    $("#shareImg").src = await makeShareCard(item);
+    $("#copyText").textContent = "复制文案";
+    $("#modal").classList.add("open"); $("#closeModal").focus();
+    $("#copyText").onclick = async () => {
+      const txt = `今日猫抓：《${item.title}》 ${d.style} · ${d.bpm} BPM\n抓抓说：${item.reason}\n—— 猫抓音乐`;
+      try { await navigator.clipboard.writeText(txt); $("#copyText").textContent = "已复制"; } catch { $("#copyText").textContent = "复制失败"; }
+    };
+  });
+}
+function updateTime(){
+  const el = document.getElementById("time"); if (!el) return;
+  const on = state.current && engine.d === state.current.desc;
+  const s = on ? Math.floor(engine.elapsed()) : 0; el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  const v = document.getElementById("viz"); if (v) drawViz(v);
+}
+
+function renderToday(){
+  const ul = $("#today"); ul.innerHTML = "";
+  $("#todayWrap").hidden = state.list.length < 2;
+  state.list.forEach((it, i) => {
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button"; b.className = "px";
+    b.innerHTML = `<canvas width="16" height="16" aria-hidden="true"></canvas><span class="t"></span><span class="s">${it.desc.style}${it.fav ? " · 已收藏" : ""}</span>`;
+    b.querySelector(".t").textContent = it.title;
+    drawCover(b.querySelector("canvas"), it.desc);
+    b.addEventListener("click", () => {
+      state.current = it; renderCard(it); renderBackstage(it.desc); say(it.reason); renderLeft();
+      playItem(it); syncPlay();
+    });
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+function persist(){ store.set({left: state.left, list: state.list}); }
+
+async function grab(){
+  if (state.busy) return;
+  engine.unlock();
+  if (state.left <= 0){ say("爪子酸了，明天再抓。今天这几首都是心意。"); return; }
+  state.busy = true; $("#grab").disabled = true;
+  engine.stop(); syncPlay();
+  say(state.current ? "哼，不喜欢？那本猫再翻翻……" : pick(DIG));
+  scene.set("dig");
+  const d = compose(true);
+  const [text] = await Promise.all([askCat(d).then(r => r || fallbackText(d)), wait(1900)]);
+  scene.recColor = FAM_COLOR[d.family][1]; scene.set("grab");
+  await wait(650);
+  const item = {title: text.title, reason: text.reason, by: text.by, desc: d, fav: false};
+  state.left -= 1; state.list.push(item); state.current = item; persist();
+  say(item.reason);
+  renderCard(item); renderBackstage(d); renderToday(); renderLeft();
+  playItem(item); syncPlay();
+  state.busy = false; $("#grab").disabled = false;
+}
+
+function loop(now){ drawScene(now); updateTime(); requestAnimationFrame(loop); }
+
+/* ---------------- 天气 ---------------- */
+function codeKind(c){
+  if (c <= 1) return "sunny";
+  if (c <= 48) return "cloudy";
+  if ((c >= 71 && c <= 77) || c === 85 || c === 86) return "snow";
+  return "rain";
+}
+async function loadWeather(){
+  const [, lat, lon] = state.city;
+  state.wx.loading = true; renderSignals();
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day&timezone=auto`, {signal: ctl.signal});
+    clearTimeout(to);
+    if (!r.ok) throw new Error("http " + r.status);
+    const j = await r.json(); const c = j.current;
+    state.wx = {kind: codeKind(c.weather_code), temp: Math.round(c.temperature_2m), isDay: !!c.is_day, live: true, loading: false};
+  } catch {
+    const keep = state.wx.live ? "sunny" : state.wx.kind;
+    state.wx = {kind: keep, temp: state.wx.temp ?? 20, isDay: hour >= 6 && hour < 18, live: false, loading: false};
+    if (state.wx.kind === "snow") state.wx.temp = -2;
+  }
+  renderSignals(); renderBackstage(state.current ? state.current.desc : undefined);
+}
+
+
+/* ---------------- 启动 ---------------- */
+function init(){
+  const wd = "日一二三四五六"[today.getDay()];
+  $("#date").textContent = `${today.getMonth()+1}.${today.getDate()} 周${wd}`;
+  try { state.skin = clamp(parseInt(localStorage.getItem("catgrab-skin") || "0", 10) || 0, 0, SKINS.length - 1); } catch { state.skin = 0; }
+  $("#skin").addEventListener("click", () => {
+    state.skin = (state.skin + 1) % SKINS.length; renderSkin();
+    try { localStorage.setItem("catgrab-skin", String(state.skin)); } catch {}
+    if (!state.busy) say(`换了身${SKINS[state.skin].name}的毛，还是本猫。`);
+  });
+  const sel = $("#city");
+  CITIES.forEach((c, i) => { const o = document.createElement("option"); o.value = i; o.textContent = c[0]; sel.appendChild(o); });
+  sel.addEventListener("change", () => { if (sel.value === "me") return; state.city = CITIES[+sel.value]; loadWeather(); });
+  $("#locate").addEventListener("click", () => {
+    if (!navigator.geolocation){ $("#status").textContent = "这个浏览器不支持定位，请手动选城市。"; return; }
+    navigator.geolocation.getCurrentPosition(p => {
+      state.city = ["我的位置", +p.coords.latitude.toFixed(2), +p.coords.longitude.toFixed(2)];
+      if (!sel.querySelector('option[value="me"]')){ const o = document.createElement("option"); o.value = "me"; o.textContent = "我的位置"; sel.prepend(o); }
+      sel.value = "me"; loadWeather();
+    }, () => { $("#status").textContent = "没拿到定位权限，请手动选城市。"; }, {timeout: 8000});
+  });
+  $("#wxManual").addEventListener("change", e => {
+    const k = e.target.value; state.wx.kind = k;
+    state.wx.temp = k === "snow" ? -2 : k === "sunny" ? 24 : k === "rain" ? 16 : 18;
+    renderSignals(); if (!state.current) renderBackstage();
+  });
+  const newsOpts = ["轻松","沉重","紧张"];
+  state.news = newsOpts[(today.getDate() * 7 + today.getMonth()) % 3];
+  $("#news").value = state.news;
+  $("#news").addEventListener("change", e => { state.news = e.target.value; if (!state.current) renderBackstage(); });
+  $("#grab").addEventListener("click", grab);
+  $("#left").addEventListener("click", () => { if (state.left === 0){ state.left = 3; persist(); renderLeft(); say("演示模式：次数重置了，再来。"); } });
+  $("#closeModal").addEventListener("click", () => $("#modal").classList.remove("open"));
+  $("#modal").addEventListener("click", e => { if (e.target.id === "modal") $("#modal").classList.remove("open"); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") $("#modal").classList.remove("open"); });
+
+  say(OPENERS[band]);
+  if (band === "深夜") scene.set("sleep");
+  if (state.list.length){
+    state.current = state.list[state.list.length - 1];
+    renderCard(state.current); renderBackstage(state.current.desc);
+    scene.recColor = FAM_COLOR[state.current.desc.family][1]; scene.set("hold");
+  } else renderBackstage();
+  renderSkin(); renderMoods(); renderLeft(); renderToday(); renderSignals(); renderLLMNote();
+  cx.imageSmoothingEnabled = false;
+  requestAnimationFrame(loop);
+  loadWeather();
+}
+init();
+})();
+</script>
+</body>
+</html>

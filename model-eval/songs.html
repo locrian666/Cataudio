@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本猫的十六首小样</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 一份夜里的录音室曲目单，安静、可扫读，猫有一点傲娇
+   IDEA: 录音棚的 track sheet：每行一个 take，左边是"点歌条件"，右边是成品信息
+   PICTURE: 表格本身；页眉一只像素黑猫，蓝眼睛
+   COLOUR and TYPE: 深墨蓝夜底 / 纸白；猫眼蓝 #4fb3ff 为唯一强调；DotGothic16 标题 + Noto Sans SC
+   LAYOUT: 窄页眉，表格占满；<600px 时每行堆叠成卡片 */
+:root{color-scheme:light dark;
+ --bg:light-dark(#f6f5f1,#0f1218);--panel:light-dark(#ffffff,#161b24);--ink:light-dark(#15171c,#e9ecf2);
+ --mute:light-dark(#5d6370,#9aa3b2);--line:light-dark(#e2e0d9,#262d3a);--eye:light-dark(#0a6fc2,#4fb3ff);
+ --chip:light-dark(#eef4fb,#1b2533);--think:light-dark(#7a4bc2,#b99bff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans SC",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,48px) max(4vw,16px)}
+header{display:flex;gap:20px;align-items:center;max-width:1400px;margin:0 auto}
+header svg{flex:none;width:72px;height:72px}
+h1{font:400 clamp(28px,4vw,42px)/1.1 "DotGothic16","Noto Sans SC",sans-serif;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0;max-width:70ch;font-size:15px}
+.sub b{color:var(--ink);font-weight:500}
+main{max-width:1400px;margin:0 auto;padding:0 max(4vw,16px) 56px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;font-size:13px;color:var(--mute);padding:12px 14px;border-bottom:1px solid var(--line);z-index:1}
+td{vertical-align:top;padding:14px;border-bottom:1px solid var(--line)}
+tr.first td{border-top:2px solid var(--line)}
+td.p{width:20%;background:light-dark(#fbfaf7,#131821)}
+td.l{width:30%;white-space:pre-line;font-size:15px;line-height:1.75}
+td.a{width:18%}
+.num{font:400 20px/1 "DotGothic16",monospace;color:var(--eye);display:block;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{background:var(--chip);border-radius:6px;padding:2px 8px;font-size:13px;white-space:nowrap}
+.ptext{font-size:13px;color:var(--mute);margin:0}
+.tag{display:inline-block;font-size:12px;border-radius:4px;padding:1px 7px;border:1px solid var(--eye);color:var(--eye);margin-bottom:6px}
+.tag.t{border-color:var(--think);color:var(--think)}
+.title{font-weight:700;font-size:17px;margin:0 0 6px}
+.style{font-size:14px;margin:0 0 8px}
+.reason{font-size:14px;margin:0 0 8px;padding-left:10px;border-left:2px solid var(--eye)}
+.stat{font-size:12px;color:var(--mute);white-space:nowrap}
+audio{width:100%;max-width:240px;height:40px}
+.gen{font-size:12px;color:var(--mute);margin-top:6px}
+.lh{font-size:12px;color:var(--mute);display:block;margin-top:4px}
+
+@media(max-width:860px){
+ table,tbody,tr,td{display:block}thead{display:none}
+ tr{border-bottom:1px solid var(--line)}td,td.p,td.l,td.a{width:auto;border:0;padding:8px 14px}
+ tr.first td.p{border-top:2px solid var(--line)}td.l{font-size:14px}
+ td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);margin-bottom:2px}
+ audio{max-width:none}}
+@media(prefers-reduced-motion:no-preference){.eye{animation:blink 5s infinite}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.eye{transform-box:fill-box;transform-origin:center}
+</style>
+</head>
+<body>
+<div class="band">
+<header>
+  <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+    <g fill="#111">
+      <rect x="2" y="1" width="1" height="2"/><rect x="9" y="1" width="1" height="2"/>
+      <rect x="2" y="3" width="8" height="5"/><rect x="3" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/>
+      <rect x="3" y="8" width="6" height="3"/><rect x="9" y="9" width="2" height="1"/><rect x="10" y="7" width="1" height="2"/>
+    </g>
+    <rect class="eye" x="4" y="4" width="1" height="2" fill="#4fb3ff"/>
+    <rect class="eye" x="7" y="4" width="1" height="2" fill="#4fb3ff"/>
+  </svg>
+  <div>
+    <h1>本猫的十六首小样</h1>
+    <p class="sub">Nemotron-3.5-Bolt-E4B 按 8 组信号写的歌，每组思考关、开各一版。<b>音频是纯器乐小样，没有人声</b>：这个模型只输出文字，音频是按它给的曲风、BPM 和调性用程序合成的，只用来听它选得对不对。</p>
+  </div>
+</header>
+</div>
+<main>
+<table>
+  <thead><tr><th>提示词</th><th>歌词</th><th>音频</th><th>其他信息</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+</main>
+<script>
+{
+const rows=[{"n": 1, "mode": "思考关", "prompt": "现在是上海早上 7:40，天气：晴。今天的新闻整体气氛：轻松。用户现在的心情：开心。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "早上 7:40", "weather": "晴", "news": "轻松", "mood": "开心"}, "title": "晨光下的小确幸", "style": "曲风：Lo-fi Pop | BPM：90 | 调性：C major", "lyrics": "[主歌]\n上海的晨光轻轻洒下\n七点四十分的闹市区渐苏\n咖啡的香气在空气里弥漫\n心情像这晴天一样舒展\n[副歌]\n开心呀 像猫咪晒暖阳\n这一刻 值得被轻轻收藏\n微风拂过 歌声在流淌\n美好日常 不需太多想象", "reason": "本猫觉得，在晴朗的上海早晨，配合轻松的新闻和开心的心情，唱点舒服的Lo-fi Pop才配得上本猫的品味。", "audio": "audio/off_1.mp4", "total": 1.997, "ttft": 0.167, "tok": 169, "tps": 92.4}, {"n": 1, "mode": "思考开", "prompt": "现在是上海早上 7:40，天气：晴。今天的新闻整体气氛：轻松。用户现在的心情：开心。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "早上 7:40", "weather": "晴", "news": "轻松", "mood": "开心"}, "title": "上海的早晨光", "style": "曲风：City Pop | BPM：120 | 调性：C major", "lyrics": "[主歌]\n七点四十分的上海城市醒来\n阳光洒满窗台不需等待\n咖啡的香气和轻快的节奏\n把每一个细胞都唤醒着\n[副歌]\n开心啊 乘着微风吹\n这一刻无需多想去追求\n蓝天白云是最好的风景\n和这晴朗的早晨相映", "reason": "哼，既然天气是晴的，心情又开心，早上在上海，本猫当然要选明亮又轻松的City Pop来配你的状态啦。", "audio": "audio/think_1.mp4", "total": 6.902, "ttft": 0.172, "tok": 578, "tps": 85.9}, {"n": 2, "mode": "思考关", "prompt": "现在是上海深夜 1:15，天气：小雨。今天的新闻整体气氛：沉重。用户现在的心情：emo。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "深夜 1:15", "weather": "小雨", "news": "沉重", "mood": "emo"}, "title": "午夜迷离的霓虹雨", "style": "曲风：Lo-fi Chillhop | BPM：75 | 调性：A minor", "lyrics": "[主歌]\n上海的夜色湿漉漉地铺开\n一盏昏黄的灯下影子在徘徊\n时间停在一点一五的静默里\n只有雨声敲打窗棂低语\n\n[副歌]\nemo的心绪被雨声轻抚着\n霓虹晕染着失落的轮廓\n任由思绪在微光里漂泊\n此刻的沉重才显得那么温柔", "reason": "本猫看出来了，深夜小雨加沉重新闻，只有Lo-fi的慵懒才能配得上你这emo的傲娇心情。", "audio": "audio/off_2.mp4", "total": 2.082, "ttft": 0.153, "tok": 177, "tps": 91.7}, {"n": 2, "mode": "思考开", "prompt": "现在是上海深夜 1:15，天气：小雨。今天的新闻整体气氛：沉重。用户现在的心情：emo。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "深夜 1:15", "weather": "小雨", "news": "沉重", "mood": "emo"}, "title": "1点15分的上海雨", "style": "曲风：Lo-Fi / Indie Pop | BPM：70 | 调性：A minor", "lyrics": "[主歌]\n玻璃窗外小雨打着节奏\n上海的夜色晕开无声的愁绪\n凌晨一点多 谁还在被时间追逐\n城市沉重像一块潮湿的绸布\n[副歌]\n在emo的静默里被雨声拥抱\n把所有的沉重都轻轻地放掉\n这一刻的微光 足够温柔地慰藉我\n听着这孤独的回响", "reason": "哼，看你深夜emo，搭配小雨和沉重的新闻气氛，这温柔的Lo-Fi才配得上你这种脆弱感。", "audio": "audio/think_2.mp4", "total": 7.575, "ttft": 0.175, "tok": 640, "tps": 86.5}, {"n": 3, "mode": "思考关", "prompt": "现在是伦敦下午 4:00，天气：阴天。今天的新闻整体气氛：紧张。用户现在的心情：焦虑。请给出这首歌的创作方案。", "case": {"city": "伦敦", "time": "下午 4:00", "weather": "阴天", "news": "紧张", "mood": "焦虑"}, "title": "雾都慢舞", "style": "曲风：Trip Hop | BPM：90 | 调性：D minor", "lyrics": "[主歌]\n伦敦的阴天 压着灰色的窗框\n四点的时钟声 缓慢而又喑哑\n新闻里的风暴 紧紧裹着空气\n看不清远方 只剩内心的迷惘\n[副歌]\n在迷雾里 慢舞着不确定\n让焦虑化作 沉静的音符\n黑猫的低语 轻轻抚平不安\n等待天光 哪怕只是微光", "reason": "本猫看出来了，阴天和紧张的新闻气氛配上焦虑的心情，必须用Trip Hop这种沉稳又略带忧郁的调性来抚平你那点小情绪。", "audio": "audio/off_3.mp4", "total": 2.166, "ttft": 0.151, "tok": 185, "tps": 91.9}, {"n": 3, "mode": "思考开", "prompt": "现在是伦敦下午 4:00，天气：阴天。今天的新闻整体气氛：紧张。用户现在的心情：焦虑。请给出这首歌的创作方案。", "case": {"city": "伦敦", "time": "下午 4:00", "weather": "阴天", "news": "紧张", "mood": "焦虑"}, "title": "伦敦四点的灰线", "style": "曲风：Indie Pop/Alternative | BPM：90 | 调性：A minor", "lyrics": "[主歌]\n阴天压着西区高楼的侧影\n时针指向四点 焦躁又低沉\n新闻的嗡鸣 像无形的网\n把每一份不安 都细细收藏\n[副歌]\n在灰色里找一处锚点\n呼吸缓慢 别急着向前\n让心跳找到稳定的节奏\n这片焦虑 总会慢慢消融", "reason": "哼，你这种紧张又焦虑的状态，需要用A minor的沉静来镇压，这不就是阴天、紧张新闻和伦敦下午四点给我的信号吗？笨蛋。", "audio": "audio/think_3.mp4", "total": 8.29, "ttft": 0.198, "tok": 694, "tps": 85.8}, {"n": 4, "mode": "思考关", "prompt": "现在是东京晚上 9:30，天气：下雪。今天的新闻整体气氛：轻松。用户现在的心情：放空。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "晚上 9:30", "weather": "下雪", "news": "轻松", "mood": "放空"}, "title": "雪夜的半梦框", "style": "曲风：Lo-fi Chillhop | BPM：78 | 调性：E minor", "lyrics": "[主歌]\n东京夜色轻描淡写地滑落\n窗外细雪悄悄覆盖街角\n霓虹被白染成柔和的色块\n世界慢下来不急着奔跑\n[副歌]\n让思绪漂浮在雪的纹理上\n任时间温柔地将你轻轻拥抱\n此刻放空不设任何约束\n只听那静谧的旋律流淌着", "reason": "本猫觉得，在东京雪夜的轻松氛围下，放空的你需要这慵懒的Lo-fi来配我的傲娇推荐。", "audio": "audio/off_4.mp4", "total": 2.09, "ttft": 0.172, "tok": 174, "tps": 90.7}, {"n": 4, "mode": "思考开", "prompt": "现在是东京晚上 9:30，天气：下雪。今天的新闻整体气氛：轻松。用户现在的心情：放空。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "晚上 9:30", "weather": "下雪", "news": "轻松", "mood": "放空"}, "title": "东京雪夜的放空键", "style": "曲风：Lo-fi Hip Hop | BPM：78 | 调性：A minor", "lyrics": "[主歌]\n窗外是东京轻柔的雪花\n时间停在九点半的寂静里\n不急着寻找答案或追问谁\n让思绪像雪一样缓缓地飘去\n[副歌]\n把心事都放空 随雪融化\n不需要用力 也不需要回答\n只有这片刻的静 温暖又自在\n本猫说 允许自己慢慢等待", "reason": "哼，既然是下雪的东京深夜，新闻也没什么烦人的，你只是想放空，本猫就给你最不费力的慵懒感。", "audio": "audio/think_4.mp4", "total": 7.924, "ttft": 0.172, "tok": 651, "tps": 84.0}, {"n": 5, "mode": "思考关", "prompt": "现在是东京中午 12:10，天气：晴。今天的新闻整体气氛：紧张。用户现在的心情：开心。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "中午 12:10", "weather": "晴", "news": "紧张", "mood": "开心"}, "title": "午后晴光下的小小喘息", "style": "曲风：City Pop / Lo-fi | BPM：95 | 调性：F major", "lyrics": "[主歌]\n东京午正阳光洒满窗台\n城市节奏虽快不曾停摆\n新闻里低语着一丝紧张的讯息\n可此刻的我依然笑着自在\n[副歌]\n把开心偷偷锁进这晴朗的午后\n让旋律轻轻治愈所有忧愁\n哪怕世界有点紧绷 也要好好享受\n这片刻的宁静 像猫咪打盹的温柔", "reason": "虽然新闻紧张，但用户心情开心且是东京晴朗的午时，本猫决定用轻盈的City Pop来平衡这份不和谐的信号。", "audio": "audio/off_5.mp4", "total": 2.074, "ttft": 0.142, "tok": 179, "tps": 92.6}, {"n": 5, "mode": "思考开", "prompt": "现在是东京中午 12:10，天气：晴。今天的新闻整体气氛：紧张。用户现在的心情：开心。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "中午 12:10", "weather": "晴", "news": "紧张", "mood": "开心"}, "title": "东京午后晴光下的小小确幸", "style": "曲风：City Pop / Indie Pop | BPM：118 | 调性：C Major", "lyrics": "[主歌]\n午后东京阳光洒满街头\n蓝天白云没有一丝忧愁\n新闻里那些紧张的低语\n听着却不影响我此刻的悠游\n[副歌]\n把世界的风声都挡在门外\n只留下这份单纯的喜悦\n让开心在晴朗的午后盛开\n不必为远方的忧虑费心才", "reason": "哼，你开心又在东京中午晴天，自然得跳个舞，虽然外面新闻气氛紧张，可本猫懒得理那些多余的烦恼。", "audio": "audio/think_5.mp4", "total": 8.145, "ttft": 0.162, "tok": 717, "tps": 89.8}, {"n": 6, "mode": "思考关", "prompt": "现在是伦敦早上 8:20，天气：小雨。今天的新闻整体气氛：轻松。用户现在的心情：放空。请给出这首歌的创作方案。", "case": {"city": "伦敦", "time": "早上 8:20", "weather": "小雨", "news": "轻松", "mood": "放空"}, "title": "伦敦小雨调色盘", "style": "曲风：Lo-fi Chillhop | BPM：78 | 调性：F minor", "lyrics": "[主歌]\n雨滴敲打旧窗格\n伦敦清晨慢半拍\n咖啡的微苦在空气里散\n思绪像雾气缓缓飘散\n[副歌]\nปล่อย心空 听雨声轻唱\n世界都暂停在这一方\n不必追赶 不必多想\n就让此刻温柔地拥抱", "reason": "本猫看天气小雨和用户放空的信号，这首慵懒的Lo-fi最适合在伦敦的早晨放空。", "audio": "audio/off_6.mp4", "total": 1.814, "ttft": 0.14, "tok": 155, "tps": 92.6}, {"n": 6, "mode": "思考开", "prompt": "现在是伦敦早上 8:20，天气：小雨。今天的新闻整体气氛：轻松。用户现在的心情：放空。请给出这首歌的创作方案。", "case": {"city": "伦敦", "time": "早上 8:20", "weather": "小雨", "news": "轻松", "mood": "放空"}, "title": "伦敦小雨漫漂", "style": "曲风：Indie Folk | BPM：80 | 调性：A minor", "lyrics": "[主歌]\n八点多 伦敦的窗外\n小雨声 轻轻打着瓦片\n放空时 心绪不急不躁\n世界慢了下来 像一场呼吸\n[副歌]\n让思绪 随雨水滑落\n不必追问 不必担忧过\n这片刻 足够简单美好\n安静的清晨 留给你就好", "reason": "哼，看你心情是放空的，配这小雨和轻松的新闻气氛，不选这种柔和的Indie Folk怎么行，笨蛋。", "audio": "audio/think_6.mp4", "total": 7.791, "ttft": 0.173, "tok": 678, "tps": 89.0}, {"n": 7, "mode": "思考关", "prompt": "现在是上海傍晚 6:45，天气：阴天。今天的新闻整体气氛：沉重。用户现在的心情：焦虑。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "傍晚 6:45", "weather": "阴天", "news": "沉重", "mood": "焦虑"}, "title": "雾锁黄浦江", "style": "曲风：Lo-fi Chillwave | BPM：85 | 调性：A minor", "lyrics": "[主歌]\n阴天笼罩着这座钢铁森林\n黄浦江水静默无声地流淌\n晚霞被灰色的云层裁剪\n焦虑像潮水悄悄蔓延开\n[副歌]\n在迷雾里寻一处安放\n让心绪稍稍舒展和放\n不必追赶那沉重的时光\n只听低语，慢慢靠上", "reason": "本猫看出来了，阴天的沉重新闻配上焦虑的心情，配上Lo-fi的疏离感最适合本猫品味。", "audio": "audio/off_7.mp4", "total": 1.948, "ttft": 0.152, "tok": 167, "tps": 93.0}, {"n": 7, "mode": "思考开", "prompt": "现在是上海傍晚 6:45，天气：阴天。今天的新闻整体气氛：沉重。用户现在的心情：焦虑。请给出这首歌的创作方案。", "case": {"city": "上海", "time": "傍晚 6:45", "weather": "阴天", "news": "沉重", "mood": "焦虑"}, "title": "静默的黄昏蓝", "style": "曲风：Lo-Fi Indie Pop | BPM：78 | 调性：A minor", "lyrics": "[主歌]\n上海阴天六点四五分\n窗外灰色的晚风\n沉重的消息像水汽弥漫\n锁在焦虑的缝隙里\n[副歌]\n把思绪慢放在微光里\n让不安温柔地退去\n这片静默的黄昏是我的避风港\n不需言语，只需听着", "reason": "本猫当然知道焦虑不该大声嚷嚷，毕竟是阴天、沉重新闻和傍晚的信号，需要的是这种低语的治愈。", "audio": "audio/think_7.mp4", "total": 7.124, "ttft": 0.166, "tok": 614, "tps": 88.2}, {"n": 8, "mode": "思考关", "prompt": "现在是东京凌晨 3:00，天气：下雪。今天的新闻整体气氛：沉重。用户现在的心情：emo。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "凌晨 3:00", "weather": "下雪", "news": "沉重", "mood": "emo"}, "title": "雪夜下的像素独白", "style": "曲风：Lo-fi Chillhop | BPM：75 | 调性：A minor", "lyrics": "[主歌]\n东京的凌晨三点 窗外雪花静静落\n霓虹微弱地晕开 像模糊的旧照片\n沉重的消息在空气里 像冰冷的雾气\n本猫也懂这emo 谁又能轻易说好\n[副歌]\n在雪夜的低语中 陪你慢慢emo\n让旋律轻轻拥抱 别害怕那片空\n像素黑影不曾走 陪你到天边", "reason": "虽然你心情emo，但凌晨的下雪和沉重的新闻气氛，本猫决定用Lo-fi的温柔来衬托你的脆弱，这才是最体面的陪伴。", "audio": "audio/off_8.mp4", "total": 2.214, "ttft": 0.143, "tok": 191, "tps": 92.2}, {"n": 8, "mode": "思考开", "prompt": "现在是东京凌晨 3:00，天气：下雪。今天的新闻整体气氛：沉重。用户现在的心情：emo。请给出这首歌的创作方案。", "case": {"city": "东京", "time": "凌晨 3:00", "weather": "下雪", "news": "沉重", "mood": "emo"}, "title": "凌晨东京的白色独白", "style": "曲风：Lo-fi Indie | BPM：82 | 调性：A minor", "lyrics": "[主歌]\n3点的东京，雪是静音的\n冰冷的玻璃上，倒映着虚无的夜景\n沉重的气压，压在每个呼吸里\n只有这城市，慢吞吞地熄灭着灯火\n[副歌]\n在雪中，慢慢emo就好\n不必急着寻找什么出口\n让悲伤，也像雪一样温柔\n安静地，陪着你度过此刻", "reason": "哼，既然是沉重的新闻和emo的心情，配上东京凌晨的下雪，就该是这温柔的Lo-fi才配本猫推荐。", "audio": "audio/think_8.mp4", "total": 7.397, "ttft": 0.269, "tok": 650, "tps": 91.2}];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lyr=s=>esc(s).replace(/\[(主歌|副歌)\]\n?/g,'<span class="lh">$1</span>');
+const html=rows.map((r,k)=>{
+  const first=k===0||rows[k-1].n!==r.n;
+  const c=r.case;
+  const p=first?`<td class="p" rowspan="2" data-l="提示词"><span class="num">#${r.n}</span>
+    <div class="chips"><span class="chip">${esc(c.city)} ${esc(c.time)}</span><span class="chip">${esc(c.weather)}</span><span class="chip">新闻${esc(c.news)}</span><span class="chip">心情 ${esc(c.mood)}</span></div>
+    <p class="ptext">${esc(r.prompt)}</p></td>`:'';
+  return `<tr class="${first?'first':''}">${p}
+    <td class="l" data-l="歌词">${lyr(r.lyrics)}</td>
+    <td class="a" data-l="音频"><audio controls preload="none" src="${esc(r.audio)}"></audio><div class="gen">${esc(r.audio.split('/').pop())}</div></td>
+    <td data-l="其他信息"><span class="tag ${r.mode==='思考开'?'t':''}">${esc(r.mode)}</span>
+      <p class="title">${esc(r.title)}</p>
+      <p class="style">${esc(r.style)}</p>
+      <p class="reason">${esc(r.reason)}</p>
+      <span class="stat">总 ${r.total.toFixed(1)}s · 首字 ${r.ttft.toFixed(2)}s · ${r.tok} tok · ${r.tps} tok/s</span></td></tr>`;
+}).join('');
+document.getElementById('rows').innerHTML=html;
+document.addEventListener('play',e=>{for(const a of document.querySelectorAll('audio'))if(a!==e.target)a.pause()},true);
+}
+</script>
+</body>
+</html>

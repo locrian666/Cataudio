@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本猫的十六首小样</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 一份夜里的录音室曲目单，安静、可扫读，猫有一点傲娇
+   IDEA: 录音棚的 track sheet：每行一个 take，左边是"点歌条件"，右边是成品信息
+   PICTURE: 表格本身；页眉一只像素黑猫，蓝眼睛
+   COLOUR and TYPE: 深墨蓝夜底 / 纸白；猫眼蓝 #4fb3ff 为唯一强调；DotGothic16 标题 + Noto Sans SC
+   LAYOUT: 窄页眉，表格占满；<600px 时每行堆叠成卡片 */
+:root{color-scheme:light dark;
+ --bg:light-dark(#f6f5f1,#0f1218);--panel:light-dark(#ffffff,#161b24);--ink:light-dark(#15171c,#e9ecf2);
+ --mute:light-dark(#5d6370,#9aa3b2);--line:light-dark(#e2e0d9,#262d3a);--eye:light-dark(#0a6fc2,#4fb3ff);
+ --chip:light-dark(#eef4fb,#1b2533);--think:light-dark(#7a4bc2,#b99bff)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans SC",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,48px) max(4vw,16px)}
+header{display:flex;gap:20px;align-items:center;max-width:1400px;margin:0 auto}
+header svg{flex:none;width:72px;height:72px}
+h1{font:400 clamp(28px,4vw,42px)/1.1 "DotGothic16","Noto Sans SC",sans-serif;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--mute);margin:0;max-width:70ch;font-size:15px}
+.sub b{color:var(--ink);font-weight:500}
+main{max-width:1400px;margin:0 auto;padding:0 max(4vw,16px) 56px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:500;font-size:13px;color:var(--mute);padding:12px 14px;border-bottom:1px solid var(--line);z-index:1}
+td{vertical-align:top;padding:14px;border-bottom:1px solid var(--line)}
+tr.first td{border-top:2px solid var(--line)}
+td.p{width:20%;background:light-dark(#fbfaf7,#131821)}
+td.l{width:30%;white-space:pre-line;font-size:15px;line-height:1.75}
+td.a{width:18%}
+.num{font:400 20px/1 "DotGothic16",monospace;color:var(--eye);display:block;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{background:var(--chip);border-radius:6px;padding:2px 8px;font-size:13px;white-space:nowrap}
+.ptext{font-size:13px;color:var(--mute);margin:0}
+.tag{display:inline-block;font-size:12px;border-radius:4px;padding:1px 7px;border:1px solid var(--eye);color:var(--eye);margin-bottom:6px}
+.tag.t{border-color:var(--think);color:var(--think)}
+.title{font-weight:700;font-size:17px;margin:0 0 6px}
+.style{font-size:14px;margin:0 0 8px}
+.reason{font-size:14px;margin:0 0 8px;padding-left:10px;border-left:2px solid var(--eye)}
+.stat{font-size:12px;color:var(--mute);white-space:nowrap}
+audio{width:100%;max-width:240px;height:40px}
+.gen{font-size:12px;color:var(--mute);margin-top:6px}
+.lh{font-size:12px;color:var(--mute);display:block;margin-top:4px}
+
+@media(max-width:860px){
+ table,tbody,tr,td{display:block}thead{display:none}
+ tr{border-bottom:1px solid var(--line)}td,td.p,td.l,td.a{width:auto;border:0;padding:8px 14px}
+ tr.first td.p{border-top:2px solid var(--line)}td.l{font-size:14px}
+ td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);margin-bottom:2px}
+ audio{max-width:none}}
+@media(prefers-reduced-motion:no-preference){.eye{animation:blink 5s infinite}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.eye{transform-box:fill-box;transform-origin:center}
+</style>
+</head>
+<body>
+<div class="band">
+<header>
+  <svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+    <g fill="#111">
+      <rect x="2" y="1" width="1" height="2"/><rect x="9" y="1" width="1" height="2"/>
+      <rect x="2" y="3" width="8" height="5"/><rect x="3" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/>
+      <rect x="3" y="8" width="6" height="3"/><rect x="9" y="9" width="2" height="1"/><rect x="10" y="7" width="1" height="2"/>
+    </g>
+    <rect class="eye" x="4" y="4" width="1" height="2" fill="#4fb3ff"/>
+    <rect class="eye" x="7" y="4" width="1" height="2" fill="#4fb3ff"/>
+  </svg>
+  <div>
+    <h1>本猫的十六首小样</h1>
+    <p class="sub">Nemotron-3.5-Bolt-E4B 按 8 组信号写的歌，每组思考关、开各一版。<b>音频是纯器乐小样，没有人声</b>：这个模型只输出文字，音频是按它给的曲风、BPM 和调性用程序合成的，只用来听它选得对不对。</p>
+  </div>
+</header>
+</div>
+<main>
+<table>
+  <thead><tr><th>提示词</th><th>歌词</th><th>音频</th><th>其他信息</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+</main>
+<script>
+{
+const rows=/*DATA*/[];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lyr=s=>esc(s).replace(/\[(主歌|副歌)\]\n?/g,'<span class="lh">$1</span>');
+const html=rows.map((r,k)=>{
+  const first=k===0||rows[k-1].n!==r.n;
+  const c=r.case;
+  const p=first?`<td class="p" rowspan="2" data-l="提示词"><span class="num">#${r.n}</span>
+    <div class="chips"><span class="chip">${esc(c.city)} ${esc(c.time)}</span><span class="chip">${esc(c.weather)}</span><span class="chip">新闻${esc(c.news)}</span><span class="chip">心情 ${esc(c.mood)}</span></div>
+    <p class="ptext">${esc(r.prompt)}</p></td>`:'';
+  return `<tr class="${first?'first':''}">${p}
+    <td class="l" data-l="歌词">${lyr(r.lyrics)}</td>
+    <td class="a" data-l="音频"><audio controls preload="none" src="${esc(r.audio)}"></audio><div class="gen">${esc(r.audio.split('/').pop())}</div></td>
+    <td data-l="其他信息"><span class="tag ${r.mode==='思考开'?'t':''}">${esc(r.mode)}</span>
+      <p class="title">${esc(r.title)}</p>
+      <p class="style">${esc(r.style)}</p>
+      <p class="reason">${esc(r.reason)}</p>
+      <span class="stat">总 ${r.total.toFixed(1)}s · 首字 ${r.ttft.toFixed(2)}s · ${r.tok} tok · ${r.tps} tok/s</span></td></tr>`;
+}).join('');
+document.getElementById('rows').innerHTML=html;
+document.addEventListener('play',e=>{for(const a of document.querySelectorAll('audio'))if(a!==e.target)a.pause()},true);
+}
+</script>
+</body>
+</html>
